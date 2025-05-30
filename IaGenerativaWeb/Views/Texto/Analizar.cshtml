@@ -1,0 +1,18 @@
+﻿@model IAGenerativaDemo.Web.Models.TextoViewModel
+
+@{
+    ViewData["Title"] = "Analizar Texto";
+}
+
+<h2>Analizador de Formalidad</h2>
+
+<form asp-action="Analizar" method="post">
+    <label for="texto">Ingrese el texto:</label><br />
+    <textarea id="texto" name="Texto" rows="4" cols="60">@Model.Texto</textarea><br />
+    <button type="submit">Analizar</button>
+</form>
+
+@if (!string.IsNullOrEmpty(Model.Clasificacion))
+{
+    <h3>Resultado: <span style="color:blue">@Model.Clasificacion</span></h3>
+}
