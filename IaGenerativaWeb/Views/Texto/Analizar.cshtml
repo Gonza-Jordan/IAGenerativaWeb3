@@ -20,7 +20,27 @@
     <button type="submit">Analizar</button>
 </form>
 
-@if (!string.IsNullOrEmpty(Model.Clasificacion))
+<h2>Transformar texto</h2>
+
+<form asp-action="TransformarTexto" method="post">
+    <div class="form-group">
+        <label for="Texto">Texto:</label>
+        <textarea class="form-control" name="Texto" id="Texto" rows="3">@Model?.Texto</textarea>
+    </div>
+    <div class="form-group">
+        <label>Transformar a:</label>
+        <input type="radio" id="Formal" name="OpcionTransformar" value="Formal" @(Model?.OpcionTransformar == "Formal" ? "checked" : "") />
+        <label for="Formal">Formal</label>
+        <input type="radio" id="Informal" name="OpcionTransformar" value="Informal" @(Model?.OpcionTransformar == "Informal" ? "checked" : "") />
+        <label for="Informal">Informal</label>
+    </div>
+    <button type="submit" class="btn btn-primary">Transformar</button>
+</form>
+
+@if (!string.IsNullOrEmpty(Model?.TextoTransformado))
 {
-    <h3>Resultado: <span style="color:blue">@Model.Clasificacion</span></h3>
+    <div class="alert alert-info" style="margin-top:1em;">
+        <strong>Texto transformado:</strong><br />
+        @Model.TextoTransformado
+    </div>
 }

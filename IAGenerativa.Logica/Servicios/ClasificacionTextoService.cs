@@ -14,7 +14,7 @@ namespace IAGenerativaDemo.Business.Servicios
             mlContext = new MLContext();
             predEngine = EntrenarModelo();
         }
-
+        //Metodo para cargar oraciones formales o informales
         private PredictionEngine<TextoInput, TextoPrediccion> EntrenarModelo()
         {
             var datos = new List<TextoInput>
@@ -52,7 +52,7 @@ namespace IAGenerativaDemo.Business.Servicios
 
             return mlContext.Model.CreatePredictionEngine<TextoInput, TextoPrediccion>(model);
         }
-
+        //Metodo que clasifica segun la etiqueta de la oracion.
         public string Clasificar(string texto)
         {
             var resultado = predEngine.Predict(new TextoInput { Texto = texto });
@@ -60,7 +60,7 @@ namespace IAGenerativaDemo.Business.Servicios
         }
         public List<(string Frase, string Etiqueta)> ClasificarPartes(string textoCompleto)
         {
-            // Separá en oraciones simples usando punto, signo de exclamación, interrogación, etc.
+            // Separá en oraciones.
             var oraciones = textoCompleto
                 .Split(new[] { '.', '!', '?', ';', '\n' }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(o => o.Trim())
@@ -75,6 +75,23 @@ namespace IAGenerativaDemo.Business.Servicios
             }
             return resultados;
         }
+        //Metodo para calcular porcentajes
+        public (double PorcentajeFormal, double PorcentajeInformal) CalcularPorcentajeFormalInformal(string textoCompleto)
+        {
+            var partes = ClasificarPartes(textoCompleto);
+
+            int total = partes.Count;
+            if (total == 0) return (0, 0);
+
+            int formales = partes.Count(p => p.Etiqueta == "Formal");
+            int informales = partes.Count(p => p.Etiqueta == "Informal");
+
+            double porcentajeFormal = (formales * 100.0) / total;
+            double porcentajeInformal = (informales * 100.0) / total;
+
+            return (porcentajeFormal, porcentajeInformal);
+        }
+
 
     }
     public class TextoInput

@@ -1,6 +1,15 @@
 ﻿@model List<(string Frase, string Etiqueta)>
 
 <h2>Análisis de texto</h2>
+
+@if (ViewBag.PorcentajeFormal != null && ViewBag.PorcentajeInformal != null)
+{
+    <div style="margin-bottom: 1em;">
+        <strong>Formal:</strong> <span style="color:green;">@ViewBag.PorcentajeFormal.ToString("F1")%</span><br />
+        <strong>Informal:</strong> <span style="color:blue;">@ViewBag.PorcentajeInformal.ToString("F1")%</span>
+    </div>
+}
+
 <table class="table">
     <thead>
         <tr>

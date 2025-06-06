@@ -28,12 +28,43 @@ namespace IAGenerativaDemo.Web.Controllers
             }
             return View(model);
         }
+
         public IActionResult AnalizarTexto(string texto)
         {
-            var clasificador = new ClasificacionTextoService();
-            var resultados = clasificador.ClasificarPartes(texto);
+            var resultados = _servicio.ClasificarPartes(texto);
+            var (porcentajeFormal, porcentajeInformal) = _servicio.CalcularPorcentajeFormalInformal(texto);
+
+            ViewBag.PorcentajeFormal = porcentajeFormal;
+            ViewBag.PorcentajeInformal = porcentajeInformal;
+
             return View("Analisis", resultados);
         }
 
+        [HttpPost]
+        public IActionResult TransformarTexto(TextoViewModel model)
+        {
+            if (!string.IsNullOrWhiteSpace(model.Texto) && !string.IsNullOrWhiteSpace(model.OpcionTransformar))
+            {
+                if (model.OpcionTransformar == "Formal")
+                {
+                    model.TextoTransformado = model.Texto
+                        .Replace("che", "estimado")
+                        .Replace("te mando", "le envío")
+                        .Replace("vos", "usted")
+                        .Replace("gracias", "muchas gracias")
+                        .Replace("dale", "de acuerdo");
+                }
+                else
+                {
+                    model.TextoTransformado = model.Texto
+                        .Replace("estimado", "che")
+                        .Replace("le envío", "te mando")
+                        .Replace("usted", "vos")
+                        .Replace("muchas gracias", "gracias")
+                        .Replace("de acuerdo", "dale");
+                }
+            }
+            return View("Analizar", model);
+        }
     }
 }
