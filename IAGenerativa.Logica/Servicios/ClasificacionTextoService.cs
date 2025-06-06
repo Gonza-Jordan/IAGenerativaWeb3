@@ -107,6 +107,19 @@ namespace IAGenerativaDemo.Business.Servicios
                 return "Comercial";
             return "General";
         }
+        public string TransformarTexto(string texto, string opcion)
+        {
+            if (opcion == "Formal")
+            {
+                // Ejemplo de transformación: simplemente hace el texto en mayúsculas y agrega formalidad.
+                return "Estimado/a: " + texto.ToUpper();
+            }
+            else
+            {
+                // Ejemplo de transformación: lo hace en minúsculas y lo simplifica.
+                return "Che: " + texto.ToLower();
+            }
+        }
     }
     public class TextoInput
     {

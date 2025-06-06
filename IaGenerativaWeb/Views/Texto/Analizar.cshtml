@@ -5,23 +5,24 @@
 }
 
 <h2>Analizador de Oraciones</h2>
-
 <form asp-action="Analizar" method="post">
     <label for="texto">Ingrese el texto:</label><br />
-    <textarea id="texto" name="Texto" rows="4" cols="60">@Model.Texto</textarea><br />
+    <textarea id="texto" name="Texto" rows="4" cols="60">@Model?.Texto</textarea><br />
     <button type="submit">Analizar</button>
 </form>
 
-<h2>Analizador de Textos</h2>
+<hr />
 
+<h2>Analizador de Textos</h2>
 <form asp-controller="Texto" asp-action="AnalizarTexto" method="post">
     <label for="texto">Ingrese el texto:</label><br />
     <textarea name="texto" rows="6" cols="80"></textarea><br>
     <button type="submit">Analizar</button>
 </form>
 
-<h2>Transformar texto</h2>
+<hr />
 
+<h2>Transformar texto</h2>
 <form asp-action="TransformarTexto" method="post">
     <div class="form-group">
         <label for="Texto">Texto:</label>
@@ -36,44 +37,3 @@
     </div>
     <button type="submit" class="btn btn-primary">Transformar</button>
 </form>
-
-@if (!string.IsNullOrEmpty(Model?.TextoTransformado))
-{
-    <div class="alert alert-info" style="margin-top:1em;">
-        <strong>Texto transformado:</strong><br />
-        @Model.TextoTransformado
-    </div>
-}
-@if (Model.ResultadosPartes != null && Model.ResultadosPartes.Any())
-{
-    <div style="margin-bottom:1em;">
-        <strong style="color:green;">Formal: @($"{ViewBag.PorcentajeFormal:0.0}%")</strong> &nbsp;&nbsp;
-        <strong style="color:blue;">Informal: @($"{ViewBag.PorcentajeInformal:0.0}%")</strong>
-    </div>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Frase</th>
-                <th>Tipo</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var parte in Model.ResultadosPartes)
-            {
-                <tr>
-                    <td>@parte.Frase</td>
-                    <td>
-                        @if (parte.Etiqueta == "Formal")
-                        {
-                            <span style="color:green;">Formal</span>
-                        }
-                        else
-                        {
-                            <span style="color:blue;">Informal</span>
-                        }
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}

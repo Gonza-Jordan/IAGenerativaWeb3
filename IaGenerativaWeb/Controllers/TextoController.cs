@@ -19,6 +19,7 @@ namespace IAGenerativaDemo.Web.Controllers
             return View(new TextoViewModel());
         }
 
+        // ANALIZADOR DE ORACIONES
         [HttpPost]
         public IActionResult Analizar(TextoViewModel model)
         {
@@ -26,15 +27,17 @@ namespace IAGenerativaDemo.Web.Controllers
             {
                 model.Clasificacion = _servicio.Clasificar(model.Texto);
             }
-            return View(model);
+            return View("ResultadoAnalizadorOraciones", model);
         }
 
+        // ANALIZADOR DE TEXTOS
+        [HttpPost]
         public IActionResult AnalizarTexto(string texto)
         {
             var clasificador = new ClasificacionTextoService();
             var resultados = clasificador.ClasificarPartes(texto);
 
-            // Cálculo de porcentajes
+            // Calculá los porcentajes
             int total = resultados.Count;
             int formales = resultados.Count(x => x.Etiqueta == "Formal");
             int informales = resultados.Count(x => x.Etiqueta == "Informal");
@@ -42,46 +45,30 @@ namespace IAGenerativaDemo.Web.Controllers
             double porcentajeFormal = total > 0 ? (formales * 100.0) / total : 0;
             double porcentajeInformal = total > 0 ? (informales * 100.0) / total : 0;
 
-            // Armá un ViewBag para pasar los porcentajes
-            ViewBag.PorcentajeFormal = porcentajeFormal;
-            ViewBag.PorcentajeInformal = porcentajeInformal;
-            ViewBag.Resultados = resultados;
+            // Detectá el ámbito sugerido (si tenés el método)
+            string ambito = clasificador.DetectarAmbito(texto);
 
-            // Mostralo en la vista principal (Analizar)
-            var model = new TextoViewModel();
-            model.Texto = texto;
-            model.ResultadosPartes = resultados;
+            var model = new TextoViewModel
+            {
+                ResultadosPartes = resultados,
+                PorcentajeFormal = porcentajeFormal,
+                PorcentajeInformal = porcentajeInformal,
+                AmbitoSugerido = ambito
+            };
 
-            return View("Analizar", model);
+            return View("ResultadoAnalizadorTextos", model);
         }
 
-
+        // TRANSFORMADOR DE TEXTOS
         [HttpPost]
         public IActionResult TransformarTexto(TextoViewModel model)
         {
             if (!string.IsNullOrWhiteSpace(model.Texto) && !string.IsNullOrWhiteSpace(model.OpcionTransformar))
             {
-                if (model.OpcionTransformar == "Formal")
-                {
-                    model.TextoTransformado = model.Texto
-                        .Replace("che", "estimado")
-                        .Replace("te mando", "le envío")
-                        .Replace("vos", "usted")
-                        .Replace("gracias", "muchas gracias")
-                        .Replace("dale", "de acuerdo");
-                }
-                else
-                {
-                    model.TextoTransformado = model.Texto
-                        .Replace("estimado", "che")
-                        .Replace("le envío", "te mando")
-                        .Replace("usted", "vos")
-                        .Replace("muchas gracias", "gracias")
-                        .Replace("de acuerdo", "dale");
-                }
+                model.TextoTransformado = _servicio.TransformarTexto(model.Texto, model.OpcionTransformar);
+                model.AmbitoSugerido = _servicio.DetectarAmbito(model.TextoTransformado);
             }
-            return View("Analizar", model);
+            return View("ResultadoTransformadorTextos", model);
         }
-
     }
 }

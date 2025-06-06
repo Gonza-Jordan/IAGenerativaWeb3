@@ -1,0 +1,17 @@
+﻿@model IAGenerativaDemo.Web.Models.TextoViewModel
+
+@{
+    ViewData["Title"] = "Resultado - Transformar Texto";
+}
+
+<h2>Resultado - Transformar Texto</h2>
+
+@if (!string.IsNullOrEmpty(Model.TextoTransformado))
+{
+    <div class="alert alert-info" style="margin-bottom:1em;">
+        <strong>Texto transformado:</strong><br />
+        @Model.TextoTransformado
+    </div>
+}
+
+<a href="@Url.Action("Analizar", "Texto")">Volver</a>

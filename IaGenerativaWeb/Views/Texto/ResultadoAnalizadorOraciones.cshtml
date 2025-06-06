@@ -1,0 +1,10 @@
+﻿@model IAGenerativaDemo.Web.Models.TextoViewModel
+
+<h2>Resultado - Analizador de Oraciones</h2>
+@if (!string.IsNullOrWhiteSpace(Model.Clasificacion))
+{
+    <div>
+        <strong>Clasificación:</strong> @Model.Clasificacion
+    </div>
+}
+<a href="@Url.Action("Analizar", "Texto")">Volver</a>

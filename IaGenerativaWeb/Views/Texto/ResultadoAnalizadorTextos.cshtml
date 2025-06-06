@@ -1,0 +1,53 @@
+﻿@model IAGenerativaDemo.Web.Models.TextoViewModel
+
+@{
+    ViewData["Title"] = "Resultado - Analizador de Textos";
+}
+
+<h2>Resultado - Analizador de Textos</h2>
+
+<div style="margin-bottom:1em;">
+    <strong style="color:green;">
+        Formal: @($"{Model.PorcentajeFormal:0.0}%")
+    </strong>
+    <strong style="color:blue;">
+        Informal: @($"{Model.PorcentajeInformal:0.0}%")
+    </strong>
+
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Frase</th>
+            <th>Tipo</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var parte in Model.ResultadosPartes)
+        {
+            <tr>
+                <td>@parte.Frase</td>
+                <td>
+                    @if (parte.Etiqueta == "Formal")
+                    {
+                        <span style="color:green;">Formal</span>
+                    }
+                    else
+                    {
+                        <span style="color:blue;">Informal</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (!string.IsNullOrEmpty(Model.AmbitoSugerido))
+{
+    <div style="margin-top:1em;">
+        <strong>Ámbito sugerido:</strong> @Model.AmbitoSugerido
+    </div>
+}
+<br />
+<a href="@Url.Action("Analizar", "Texto")">Volver</a>
