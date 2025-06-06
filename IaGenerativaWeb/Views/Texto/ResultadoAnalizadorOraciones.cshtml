@@ -1,10 +1,24 @@
 ﻿@model IAGenerativaDemo.Web.Models.TextoViewModel
-
-<h2>Resultado - Analizador de Oraciones</h2>
-@if (!string.IsNullOrWhiteSpace(Model.Clasificacion))
-{
-    <div>
-        <strong>Clasificación:</strong> @Model.Clasificacion
-    </div>
+@{
+    ViewData["Title"] = "Resultado - Analizador de Oraciones";
 }
-<a href="@Url.Action("Analizar", "Texto")">Volver</a>
+<h2>Resultado - Analizador de Oraciones</h2>
+
+<h4>Texto ingresado:</h4>
+<div>@Model.Texto</div>
+
+<hr />
+
+<strong>Resultado:</strong>
+<div>
+    @if (!string.IsNullOrEmpty(Model.Clasificacion))
+    {
+        @Model.Clasificacion
+    }
+    else
+    {
+        <span style="color:red;">No se pudo analizar el texto.</span>
+    }
+</div>
+
+<a href="@Url.Action("AnalizadorOraciones", "Texto")">Volver</a>

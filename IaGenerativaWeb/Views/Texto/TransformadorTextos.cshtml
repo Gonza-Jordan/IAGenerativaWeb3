@@ -1,29 +1,9 @@
 ﻿@model IAGenerativaDemo.Web.Models.TextoViewModel
-
 @{
-    ViewData["Title"] = "Analizar Texto";
+    ViewData["Title"] = "Transformar Texto";
 }
-
-<h2>Analizador de Oraciones</h2>
-<form asp-action="Analizar" method="post">
-    <label for="texto">Ingrese el texto:</label><br />
-    <textarea id="texto" name="Texto" rows="4" cols="60">@Model?.Texto</textarea><br />
-    <button type="submit">Analizar</button>
-</form>
-
-<hr />
-
-<h2>Analizador de Textos</h2>
-<form asp-controller="Texto" asp-action="AnalizarTexto" method="post">
-    <label for="texto">Ingrese el texto:</label><br />
-    <textarea name="texto" rows="6" cols="80"></textarea><br>
-    <button type="submit">Analizar</button>
-</form>
-
-<hr />
-
 <h2>Transformar texto</h2>
-<form asp-action="TransformarTexto" method="post">
+<form asp-action="TransformadorTextos" method="post">
     <div class="form-group">
         <label for="Texto">Texto:</label>
         <textarea class="form-control" name="Texto" id="Texto" rows="3">@Model?.Texto</textarea>
@@ -37,3 +17,9 @@
     </div>
     <button type="submit" class="btn btn-primary">Transformar</button>
 </form>
+@if (!string.IsNullOrEmpty(Model?.Texto))
+{
+    <hr />
+    <h4>Texto ingresado:</h4>
+    <div>@Model.Texto</div>
+}

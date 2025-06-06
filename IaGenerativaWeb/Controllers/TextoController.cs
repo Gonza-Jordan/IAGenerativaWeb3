@@ -13,15 +13,22 @@ namespace IAGenerativaDemo.Web.Controllers
             _servicio = new ClasificacionTextoService();
         }
 
+        // HOME GENERAL (OPCIONAL)
         [HttpGet]
         public IActionResult Analizar()
         {
             return View(new TextoViewModel());
         }
 
-        // ANALIZADOR DE ORACIONES
+        // ========== ANALIZADOR DE ORACIONES ==========
+        [HttpGet]
+        public IActionResult AnalizadorOraciones()
+        {
+            return View(new TextoViewModel());
+        }
+
         [HttpPost]
-        public IActionResult Analizar(TextoViewModel model)
+        public IActionResult AnalizadorOraciones(TextoViewModel model)
         {
             if (!string.IsNullOrWhiteSpace(model.Texto))
             {
@@ -30,9 +37,15 @@ namespace IAGenerativaDemo.Web.Controllers
             return View("ResultadoAnalizadorOraciones", model);
         }
 
-        // ANALIZADOR DE TEXTOS
+        // ========== ANALIZADOR DE TEXTOS ==========
+        [HttpGet]
+        public IActionResult AnalizadorTextos()
+        {
+            return View(new TextoViewModel());
+        }
+
         [HttpPost]
-        public IActionResult AnalizarTexto(string texto)
+        public IActionResult AnalizadorTextos(string texto)
         {
             var clasificador = new ClasificacionTextoService();
             var resultados = clasificador.ClasificarPartes(texto);
@@ -59,9 +72,15 @@ namespace IAGenerativaDemo.Web.Controllers
             return View("ResultadoAnalizadorTextos", model);
         }
 
-        // TRANSFORMADOR DE TEXTOS
+        // ========== TRANSFORMADOR DE TEXTOS ==========
+        [HttpGet]
+        public IActionResult TransformadorTextos()
+        {
+            return View(new TextoViewModel());
+        }
+
         [HttpPost]
-        public IActionResult TransformarTexto(TextoViewModel model)
+        public IActionResult TransformadorTextos(TextoViewModel model)
         {
             if (!string.IsNullOrWhiteSpace(model.Texto) && !string.IsNullOrWhiteSpace(model.OpcionTransformar))
             {
