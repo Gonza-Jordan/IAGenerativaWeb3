@@ -91,8 +91,22 @@ namespace IAGenerativaDemo.Business.Servicios
 
             return (porcentajeFormal, porcentajeInformal);
         }
+        public string DetectarAmbito(string texto)
+        {
+            texto = texto.ToLower();
 
-
+            if (texto.Contains("estimado") || texto.Contains("le informo") || texto.Contains("atentamente") || texto.Contains("solicitud") || texto.Contains("documentación") || texto.Contains("comunicamos"))
+                return "Laboral/Profesional";
+            if (texto.Contains("profesor") || texto.Contains("tarea") || texto.Contains("clase") || texto.Contains("examen") || texto.Contains("universidad") || texto.Contains("colegio"))
+                return "Educativo";
+            if (texto.Contains("mamá") || texto.Contains("papá") || texto.Contains("familia") || texto.Contains("hermano") || texto.Contains("abuelo") || texto.Contains("cena"))
+                return "Familiar";
+            if (texto.Contains("che") || texto.Contains("dale") || texto.Contains("nos vemos") || texto.Contains("fiesta") || texto.Contains("amigo") || texto.Contains("juntada"))
+                return "Amistoso";
+            if (texto.Contains("cliente") || texto.Contains("compra") || texto.Contains("venta") || texto.Contains("pedido") || texto.Contains("factura") || texto.Contains("presupuesto"))
+                return "Comercial";
+            return "General";
+        }
     }
     public class TextoInput
     {

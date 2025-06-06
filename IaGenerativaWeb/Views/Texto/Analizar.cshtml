@@ -44,3 +44,36 @@
         @Model.TextoTransformado
     </div>
 }
+@if (Model.ResultadosPartes != null && Model.ResultadosPartes.Any())
+{
+    <div style="margin-bottom:1em;">
+        <strong style="color:green;">Formal: @($"{ViewBag.PorcentajeFormal:0.0}%")</strong> &nbsp;&nbsp;
+        <strong style="color:blue;">Informal: @($"{ViewBag.PorcentajeInformal:0.0}%")</strong>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Frase</th>
+                <th>Tipo</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var parte in Model.ResultadosPartes)
+            {
+                <tr>
+                    <td>@parte.Frase</td>
+                    <td>
+                        @if (parte.Etiqueta == "Formal")
+                        {
+                            <span style="color:green;">Formal</span>
+                        }
+                        else
+                        {
+                            <span style="color:blue;">Informal</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
