@@ -45,12 +45,11 @@ namespace IAGenerativaDemo.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult AnalizadorTextos(string texto)
+        public IActionResult AnalizadorTextos(TextoViewModel model)
         {
             var clasificador = new ClasificacionTextoService();
-            var resultados = clasificador.ClasificarPartes(texto);
+            var resultados = clasificador.ClasificarPartes(model.Texto);
 
-            // Calculá los porcentajes
             int total = resultados.Count;
             int formales = resultados.Count(x => x.Etiqueta == "Formal");
             int informales = resultados.Count(x => x.Etiqueta == "Informal");
@@ -58,16 +57,14 @@ namespace IAGenerativaDemo.Web.Controllers
             double porcentajeFormal = total > 0 ? (formales * 100.0) / total : 0;
             double porcentajeInformal = total > 0 ? (informales * 100.0) / total : 0;
 
-            // Detectá el ámbito sugerido (si tenés el método)
-            string ambito = clasificador.DetectarAmbito(texto);
+            string ambito = clasificador.DetectarAmbito(model.Texto);
+            string estadoAnimo = clasificador.DetectarEstadoAnimo(model.Texto);
 
-            var model = new TextoViewModel
-            {
-                ResultadosPartes = resultados,
-                PorcentajeFormal = porcentajeFormal,
-                PorcentajeInformal = porcentajeInformal,
-                AmbitoSugerido = ambito
-            };
+            model.ResultadosPartes = resultados;
+            model.PorcentajeFormal = porcentajeFormal;
+            model.PorcentajeInformal = porcentajeInformal;
+            model.AmbitoSugerido = ambito;
+            model.ResultadoEstadoAnimo = estadoAnimo;
 
             return View("ResultadoAnalizadorTextos", model);
         }
@@ -89,5 +86,23 @@ namespace IAGenerativaDemo.Web.Controllers
             }
             return View("ResultadoTransformadorTextos", model);
         }
+
+        // ========== ANALIZADOR DE ESTADO DE ÁNIMO ==========
+        [HttpGet]
+        public IActionResult AnalizadorEstadoAnimo()
+        {
+            return View(new TextoViewModel());
+        }
+
+        [HttpPost]
+        public IActionResult AnalizadorEstadoAnimo(TextoViewModel model)
+        {
+            if (!string.IsNullOrWhiteSpace(model.Texto))
+            {
+                model.ResultadoEstadoAnimo = _servicio.DetectarEstadoAnimo(model.Texto);
+            }
+            return View("ResultadoAnalizadorEstadoAnimo", model);
+        }
+
     }
 }

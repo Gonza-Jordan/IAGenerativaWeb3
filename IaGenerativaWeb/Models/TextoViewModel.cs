@@ -10,6 +10,7 @@
         public double PorcentajeInformal { get; set; }
         public string AmbitoSugerido { get; set; }
         public List<(string Frase, string Etiqueta)> ResultadosPartes { get; set; }
+        public string ResultadoEstadoAnimo { get; set; }
 
     }
 }

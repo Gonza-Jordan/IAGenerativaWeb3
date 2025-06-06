@@ -1,57 +1,56 @@
 ﻿@model IAGenerativaDemo.Web.Models.TextoViewModel
+
 @{
     ViewData["Title"] = "Resultado - Analizador de Textos";
 }
-<h2>Resultado - Analizador de Textos</h2>
 
-<h4>Texto ingresado:</h4>
-<div>
+<div class="container" style="margin-top: 40px; max-width:700px;">
+    <h2>Resultado - Analizador de Textos</h2>
+    <h5 class="mt-4">Texto ingresado:</h5>
+    <div>@Model.Texto</div>
+    <hr />
+
     @if (Model.ResultadosPartes != null && Model.ResultadosPartes.Any())
     {
-        @string.Join(" ", Model.ResultadosPartes.Select(p => p.Frase))
-    }
-</div>
-
-<hr />
-
-<div>
-    <strong>Resultado:</strong>
-    <div style="margin-bottom:1em;">
-        <strong style="color:green;">Formal: @($"{Model.PorcentajeFormal:0.0}%")</strong> &nbsp;&nbsp;
-        <strong style="color:blue;">Informal: @($"{Model.PorcentajeInformal:0.0}%")</strong>
-    </div>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Frase</th>
-                <th>Tipo</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var parte in Model.ResultadosPartes ?? Enumerable.Empty<(string Frase, string Etiqueta)>())
-            {
-                <tr>
-                    <td>@parte.Frase</td>
-                    <td>
-                        @if (parte.Etiqueta == "Formal")
-                        {
-                            <span style="color:green;">Formal</span>
-                        }
-                        else
-                        {
-                            <span style="color:blue;">Informal</span>
-                        }
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-    @if (!string.IsNullOrEmpty(Model.AmbitoSugerido))
-    {
-        <div style="margin-top:1em;">
-            <strong>Ámbito sugerido:</strong> @Model.AmbitoSugerido
+        <div class="mb-2">
+            <strong style="color:green;">Formal: @($"{Model.PorcentajeFormal:0.0}%")</strong> &nbsp;&nbsp;
+            <strong style="color:blue;">Informal: @($"{Model.PorcentajeInformal:0.0}%")</strong>
         </div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Frase</th>
+                    <th>Tipo</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var parte in Model.ResultadosPartes)
+                {
+                    <tr>
+                        <td>@parte.Frase</td>
+                        <td>
+                            @if (parte.Etiqueta == "Formal")
+                            {
+                                <span style="color:green;">Formal</span>
+                            }
+                            else
+                            {
+                                <span style="color:blue;">Informal</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     }
-</div>
 
-<a href="@Url.Action("AnalizadorTextos", "Texto")">Volver</a>
+    <div class="mt-3">
+        <strong>Ámbito sugerido:</strong> @Model.AmbitoSugerido
+    </div>
+    <div class="mt-3">
+        <strong>Estado de ánimo detectado:</strong>
+        <span class="alert alert-info">@Model.ResultadoEstadoAnimo</span>
+    </div>
+
+    <a href="@Url.Action("AnalizadorTextos", "Texto")" class="btn btn-secondary mt-4">Volver</a>
+</div>

@@ -1,0 +1,26 @@
+﻿@model IAGenerativaDemo.Web.Models.TextoViewModel
+@{
+    ViewData["Title"] = "Analizador de Estado de Ánimo";
+}
+<div class="container" style="margin-top: 40px; max-width:600px;">
+    <h2 class="mb-4">Analizador de Estado de Ánimo</h2>
+    <form asp-action="AnalizadorEstadoAnimo" method="post">
+        <div class="mb-3">
+            <label for="texto" class="form-label">Ingrese el texto:</label>
+            <textarea id="texto" name="Texto" class="form-control" rows="4">@Model?.Texto</textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Analizar</button>
+    </form>
+    @if (!string.IsNullOrEmpty(Model?.Texto))
+    {
+        <hr />
+        <h5>Texto ingresado:</h5>
+        <div>@Model.Texto</div>
+        <hr />
+        @if (!string.IsNullOrEmpty(Model?.ResultadoEstadoAnimo))
+        {
+            <strong>Resultado:</strong>
+            <div class="alert alert-info mt-2">Estado de ánimo detectado: <b>@Model.ResultadoEstadoAnimo</b></div>
+        }
+    }
+</div>

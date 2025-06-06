@@ -120,6 +120,20 @@ namespace IAGenerativaDemo.Business.Servicios
                 return "Che: " + texto.ToLower();
             }
         }
+        public string DetectarEstadoAnimo(string texto)
+        {
+            var positivo = new[] { "feliz", "alegre", "genial", "excelente", "fantástico", "bien", "contento" };
+            var negativo = new[] { "triste", "mal", "deprimido", "cansado", "horrible", "enojado" };
+
+            texto = texto.ToLower();
+
+            if (positivo.Any(p => texto.Contains(p)))
+                return "Positivo";
+            if (negativo.Any(n => texto.Contains(n)))
+                return "Negativo";
+            return "Neutro";
+        }
+
     }
     public class TextoInput
     {
