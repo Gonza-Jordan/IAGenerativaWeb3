@@ -1,0 +1,29 @@
+﻿@model List<(string Frase, string Etiqueta)>
+
+<h2>Análisis de texto</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Frase</th>
+            <th>Tipo</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var parte in Model)
+        {
+            <tr>
+                <td>@parte.Frase</td>
+                <td>
+                    @if (parte.Etiqueta == "Formal")
+                    {
+                        <span style="color:green;">Formal</span>
+                    }
+                    else
+                    {
+                        <span style="color:blue;">Informal</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

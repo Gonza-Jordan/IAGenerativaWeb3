@@ -4,11 +4,19 @@
     ViewData["Title"] = "Analizar Texto";
 }
 
-<h2>Analizador de Formalidad</h2>
+<h2>Analizador de Oraciones</h2>
 
 <form asp-action="Analizar" method="post">
     <label for="texto">Ingrese el texto:</label><br />
     <textarea id="texto" name="Texto" rows="4" cols="60">@Model.Texto</textarea><br />
+    <button type="submit">Analizar</button>
+</form>
+
+<h2>Analizador de Textos</h2>
+
+<form asp-controller="Texto" asp-action="AnalizarTexto" method="post">
+    <label for="texto">Ingrese el texto:</label><br />
+    <textarea name="texto" rows="6" cols="80"></textarea><br>
     <button type="submit">Analizar</button>
 </form>
 

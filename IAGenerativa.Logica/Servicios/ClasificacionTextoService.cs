@@ -19,11 +19,27 @@ namespace IAGenerativaDemo.Business.Servicios
         {
             var datos = new List<TextoInput>
             {
+                // Formales
                 new TextoInput { Texto = "Estimado señor, le informo que su pedido fue procesado.", Etiqueta = "Formal" },
-                new TextoInput { Texto = "Che, ya te mandé el archivo!", Etiqueta = "Informal" },
                 new TextoInput { Texto = "Apreciado cliente, agradecemos su consulta.", Etiqueta = "Formal" },
+                new TextoInput { Texto = "Por favor, envíe la documentación solicitada.", Etiqueta = "Formal" },
+                new TextoInput { Texto = "Nos dirigimos a usted a fin de comunicarle...", Etiqueta = "Formal" },
+                new TextoInput { Texto = "Le saludamos atentamente.", Etiqueta = "Formal" },
+                new TextoInput { Texto = "Quedamos a su disposición para cualquier consulta.", Etiqueta = "Formal" },
+                new TextoInput { Texto = "Sr. Juan, agradecemos su pronta respuesta.", Etiqueta = "Formal" },
+                new TextoInput { Texto = "Agradecemos su atención.", Etiqueta = "Formal" },
+
+                // Informales
+                new TextoInput { Texto = "Che, ya te mandé el archivo!", Etiqueta = "Informal" },
                 new TextoInput { Texto = "Dale, nos vemos!", Etiqueta = "Informal" },
+                new TextoInput { Texto = "Mandame el archivo cuando puedas.", Etiqueta = "Informal" },
+                new TextoInput { Texto = "Pasame la data así lo hago.", Etiqueta = "Informal" },
+                new TextoInput { Texto = "Hola, qué hacés?", Etiqueta = "Informal" },
+                new TextoInput { Texto = "Fijate si podés.", Etiqueta = "Informal" },
+                new TextoInput { Texto = "Te mando un saludo!", Etiqueta = "Informal" },
+                new TextoInput { Texto = "Nos vemos más tarde.", Etiqueta = "Informal" },
             };
+
 
             var data = mlContext.Data.LoadFromEnumerable(datos);
 
@@ -42,11 +58,28 @@ namespace IAGenerativaDemo.Business.Servicios
             var resultado = predEngine.Predict(new TextoInput { Texto = texto });
             return resultado.Prediccion;
         }
-    }
+        public List<(string Frase, string Etiqueta)> ClasificarPartes(string textoCompleto)
+        {
+            // Separá en oraciones simples usando punto, signo de exclamación, interrogación, etc.
+            var oraciones = textoCompleto
+                .Split(new[] { '.', '!', '?', ';', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(o => o.Trim())
+                .Where(o => !string.IsNullOrEmpty(o))
+                .ToList();
 
+            var resultados = new List<(string Frase, string Etiqueta)>();
+            foreach (var oracion in oraciones)
+            {
+                var etiqueta = Clasificar(oracion);
+                resultados.Add((oracion, etiqueta));
+            }
+            return resultados;
+        }
+
+    }
     public class TextoInput
     {
-        public string Texto { get; set; }
+        public required string Texto { get; set; }
         public string Etiqueta { get; set; }
     }
 
@@ -55,4 +88,5 @@ namespace IAGenerativaDemo.Business.Servicios
         [ColumnName("Prediccion")]
         public string Prediccion { get; set; }
     }
+
 }

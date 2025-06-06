@@ -28,5 +28,12 @@ namespace IAGenerativaDemo.Web.Controllers
             }
             return View(model);
         }
+        public IActionResult AnalizarTexto(string texto)
+        {
+            var clasificador = new ClasificacionTextoService();
+            var resultados = clasificador.ClasificarPartes(texto);
+            return View("Analisis", resultados);
+        }
+
     }
 }
