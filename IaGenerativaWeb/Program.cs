@@ -1,9 +1,19 @@
+using IAGenerativaDemo.Business.Servicios;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddSingleton<ClasificacionTextoService>();
+builder.Services.AddTransient<IStartupService, StartupService>();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var startupService = scope.ServiceProvider.GetRequiredService<IStartupService>();
+    await startupService.InitializeAsync();
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

@@ -8,9 +8,9 @@ namespace IAGenerativaDemo.Web.Controllers
     {
         private readonly ClasificacionTextoService _servicio;
 
-        public TextoController()
+        public TextoController(ClasificacionTextoService servicio)
         {
-            _servicio = new ClasificacionTextoService();
+            _servicio = servicio;
         }
 
         // HOME GENERAL (OPCIONAL)
@@ -47,8 +47,7 @@ namespace IAGenerativaDemo.Web.Controllers
         [HttpPost]
         public IActionResult AnalizadorTextos(TextoViewModel model)
         {
-            var clasificador = new ClasificacionTextoService();
-            var resultados = clasificador.ClasificarPartes(model.Texto);
+            var resultados = _servicio.ClasificarPartes(model.Texto);
 
             int total = resultados.Count;
             int formales = resultados.Count(x => x.Etiqueta == "Formal");
@@ -57,8 +56,8 @@ namespace IAGenerativaDemo.Web.Controllers
             double porcentajeFormal = total > 0 ? (formales * 100.0) / total : 0;
             double porcentajeInformal = total > 0 ? (informales * 100.0) / total : 0;
 
-            string ambito = clasificador.DetectarAmbito(model.Texto);
-            string estadoAnimo = clasificador.DetectarEstadoAnimo(model.Texto);
+            string ambito = _servicio.DetectarAmbito(model.Texto);
+            string estadoAnimo = _servicio.DetectarEstadoAnimo(model.Texto);
 
             model.ResultadosPartes = resultados;
             model.PorcentajeFormal = porcentajeFormal;
