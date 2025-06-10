@@ -1,16 +1,22 @@
-﻿using Microsoft.ML;
+﻿using IAGenerativa.Data.EF;
+using IAGenerativa.Data.Enums;
+using IAGenerativa.Data.UnitOfWork;
+using IAGenerativa.Logica.Servicios.Interfaces;
+using Microsoft.ML;
 using Microsoft.ML.Data;
 using System.Collections.Generic;
 
 namespace IAGenerativaDemo.Business.Servicios
 {
-    public class ClasificacionTextoService
+    public class ClasificacionTextoService: IClasificacionTextoService
     {
         private readonly MLContext mlContext;
         private readonly PredictionEngine<TextoInput, TextoPrediccion> predEngine;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public ClasificacionTextoService()
+        public ClasificacionTextoService(IUnitOfWork unitOfWork)
         {
+            _unitOfWork = unitOfWork;
             mlContext = new MLContext();
             predEngine = EntrenarModelo();
         }
@@ -134,6 +140,68 @@ namespace IAGenerativaDemo.Business.Servicios
             return "Neutro";
         }
 
+        public async Task<string> DetectarEstadoAnimoAsync(string texto)
+        {
+            texto = texto.ToLower();
+
+            var estados = await _unitOfWork.GetRepository<EstadosAnimo>().GetAllAsync();
+
+            if (estados.Any(e => e.TipoId == (int)TipoEstadoAnimoEnum.Positivo && texto.Contains(e.Nombre.ToLower())))
+                return "Positivo";
+
+            if (estados.Any(e => e.TipoId == (int)TipoEstadoAnimoEnum.Negativo && texto.Contains(e.Nombre.ToLower())))
+                return "Negativo";
+
+            return "Neutro";
+        }
+
+        public async Task<TipoEstadoAnimo> ObtenerTipoEstadoDeAnimoPorNombre(string nombre)
+        {
+            nombre = nombre.ToLower();
+
+            var estadoAnimo = await _unitOfWork.GetRepository<TipoEstadoAnimo>().GetOne(x => x.Nombre.ToLower().Trim() == nombre.ToLower().Trim());
+            return estadoAnimo;
+        }
+
+        public async Task<Ambito> ObtenerAmbitoPorNombre(string nombre)
+        {
+            nombre = nombre.ToLower();
+
+            var ambito = await _unitOfWork.GetRepository<Ambito>().GetOne(x => x.Nombre.ToLower().Trim() == nombre.ToLower().Trim());
+            return ambito;
+        }
+
+        public async Task GuardarResultadoAnalizadorDeTexto(ResultadoAnalizadorDeTexto resultadoAnalizadorDeTexto)
+        {
+            await _unitOfWork.GetRepository<ResultadoAnalizadorDeTexto>().AddAsync(resultadoAnalizadorDeTexto);
+            await _unitOfWork.SaveAsync();
+        }
+
+        public async Task GuardarResultadoTransformadorDeTexto(ResultadoTransformadorDeTexto transformadorDeTexto)
+        {
+            await _unitOfWork.GetRepository<ResultadoTransformadorDeTexto>().AddAsync(transformadorDeTexto);
+            await _unitOfWork.SaveAsync();
+        }
+
+        public async Task GuardarResultadoAnalizadorDeOraciones(ResultadoAnalizadorOracione resAnalizadorDeOraciones)
+        {
+            await _unitOfWork.GetRepository<ResultadoAnalizadorOracione>().AddAsync(resAnalizadorDeOraciones);
+            await _unitOfWork.SaveAsync();
+        }
+
+        public async Task<Clasificacion> ObtenerClasificacionPorNombre(string nombre)
+        {
+            nombre = nombre.ToLower();
+
+            var clasificacion = await _unitOfWork.GetRepository<Clasificacion>().GetOne(x => x.Nombre.ToLower().Trim() == nombre.ToLower().Trim());
+            return clasificacion;
+        }
+
+        public async Task GuardarResultadoAnalizadorDeEstAnimo(ResultadoAnalizadorEstadoAnimo resAnalizadorEstadoAnimo)
+        {
+            await _unitOfWork.GetRepository<ResultadoAnalizadorEstadoAnimo>().AddAsync(resAnalizadorEstadoAnimo);
+            await _unitOfWork.SaveAsync();
+        }
     }
     public class TextoInput
     {

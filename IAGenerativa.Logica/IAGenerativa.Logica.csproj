@@ -10,4 +10,8 @@
     <PackageReference Include="Microsoft.ML" Version="4.0.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\IAGenerativa.Data\IAGenerativa.Data.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -1,7 +1,21 @@
+using IAGenerativa.Data.EF;
+using IAGenerativa.Data.Repository;
+using IAGenerativa.Data.UnitOfWork;
+using IAGenerativa.Logica.Servicios.Interfaces;
+using IAGenerativaDemo.Business.Servicios;
+using Microsoft.EntityFrameworkCore;
+using System;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddDbContext<IagenerativaDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IClasificacionTextoService, ClasificacionTextoService>();
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
 var app = builder.Build();
 
