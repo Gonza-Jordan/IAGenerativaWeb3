@@ -1,14 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using IAGenerativaDemo.Web.Models;
 using IAGenerativaDemo.Business.Servicios;
+using IAGenerativa.Logica.Servicios.Interfaces;
+using IAGenerativa.Data.EF;
 
 namespace IAGenerativaDemo.Web.Controllers
 {
     public class TextoController : Controller
     {
-        private readonly ClasificacionTextoService _servicio;
+        private readonly IClasificacionTextoService _servicio;
 
-        public TextoController(ClasificacionTextoService servicio)
+
+        public TextoController(IClasificacionTextoService servicio)
         {
             _servicio = servicio;
         }
@@ -28,11 +31,22 @@ namespace IAGenerativaDemo.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult AnalizadorOraciones(TextoViewModel model)
+        public async Task<IActionResult> AnalizadorOraciones(TextoViewModel model)
         {
             if (!string.IsNullOrWhiteSpace(model.Texto))
             {
                 model.Clasificacion = _servicio.Clasificar(model.Texto);
+
+                Clasificacion clasificacionAguardar = await _servicio.ObtenerClasificacionPorNombre(model.Clasificacion);
+
+                ResultadoAnalizadorOracione resultadoAnalizadorOraciones = new ResultadoAnalizadorOracione
+                {
+                    TextoOriginal = model.Texto,
+                    ClasificacionId = clasificacionAguardar.Id,                    
+                    FechaProcesamiento = DateTime.UtcNow
+                };
+
+                await _servicio.GuardarResultadoAnalizadorDeOraciones(resultadoAnalizadorOraciones);
             }
             return View("ResultadoAnalizadorOraciones", model);
         }
@@ -45,8 +59,10 @@ namespace IAGenerativaDemo.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult AnalizadorTextos(TextoViewModel model)
-        {
+
+        public async Task<IActionResult> AnalizadorTextos(TextoViewModel model)
+        {           
+
             var resultados = _servicio.ClasificarPartes(model.Texto);
 
             int total = resultados.Count;
@@ -57,13 +73,28 @@ namespace IAGenerativaDemo.Web.Controllers
             double porcentajeInformal = total > 0 ? (informales * 100.0) / total : 0;
 
             string ambito = _servicio.DetectarAmbito(model.Texto);
-            string estadoAnimo = _servicio.DetectarEstadoAnimo(model.Texto);
+            string estadoAnimo = await _servicio.DetectarEstadoAnimoAsync(model.Texto);
 
             model.ResultadosPartes = resultados;
             model.PorcentajeFormal = porcentajeFormal;
             model.PorcentajeInformal = porcentajeInformal;
-            model.AmbitoSugerido = ambito;
+            model.AmbitoSugerido = ambito;            
             model.ResultadoEstadoAnimo = estadoAnimo;
+
+            TipoEstadoAnimo estadoAnimoAguardar = await _servicio.ObtenerTipoEstadoDeAnimoPorNombre(estadoAnimo);
+            Ambito ambitoAguardar = await _servicio.ObtenerAmbitoPorNombre(ambito);
+
+            ResultadoAnalizadorDeTexto resultadoAnalizador = new ResultadoAnalizadorDeTexto
+            {
+                TextoOriginal = model.Texto,
+                PorcentajeFormal = porcentajeFormal,
+                PorcentajeInformal = porcentajeInformal,
+                AmbitoId = ambitoAguardar.Id,
+                TipoEstadoAnimoId = estadoAnimoAguardar.Id,
+                FechaProcesamiento = DateTime.UtcNow
+            };
+
+            await _servicio.GuardarResultadoAnalizadorDeTexto(resultadoAnalizador);
 
             return View("ResultadoAnalizadorTextos", model);
         }
@@ -76,12 +107,23 @@ namespace IAGenerativaDemo.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult TransformadorTextos(TextoViewModel model)
+        public async Task<IActionResult> TransformadorTextos(TextoViewModel model)
         {
             if (!string.IsNullOrWhiteSpace(model.Texto) && !string.IsNullOrWhiteSpace(model.OpcionTransformar))
             {
                 model.TextoTransformado = _servicio.TransformarTexto(model.Texto, model.OpcionTransformar);
                 model.AmbitoSugerido = _servicio.DetectarAmbito(model.TextoTransformado);
+
+                Ambito ambitoAguardar = await _servicio.ObtenerAmbitoPorNombre(model.AmbitoSugerido);
+
+                ResultadoTransformadorDeTexto resultadoTransformador = new ResultadoTransformadorDeTexto
+                {
+                    TextoOriginal = model.Texto,
+                    TextoTransformado = model.TextoTransformado,
+                    AmbitoId = ambitoAguardar.Id,
+                    FechaProcesamiento = DateTime.UtcNow
+                };
+                await _servicio.GuardarResultadoTransformadorDeTexto(resultadoTransformador);
             }
             return View("ResultadoTransformadorTextos", model);
         }
@@ -94,11 +136,20 @@ namespace IAGenerativaDemo.Web.Controllers
         }
 
         [HttpPost]
-        public IActionResult AnalizadorEstadoAnimo(TextoViewModel model)
+        public async Task<IActionResult> AnalizadorEstadoAnimo(TextoViewModel model)
         {
             if (!string.IsNullOrWhiteSpace(model.Texto))
             {
-                model.ResultadoEstadoAnimo = _servicio.DetectarEstadoAnimo(model.Texto);
+                model.ResultadoEstadoAnimo = await _servicio.DetectarEstadoAnimoAsync(model.Texto);
+
+                TipoEstadoAnimo estadoAnimoAguardar = await _servicio.ObtenerTipoEstadoDeAnimoPorNombre(model.ResultadoEstadoAnimo);
+                ResultadoAnalizadorEstadoAnimo resultadoAnalizadorEstadoAnimo = new ResultadoAnalizadorEstadoAnimo
+                {
+                    TextoOriginal = model.Texto,
+                    TipoEstadoAnimoId = estadoAnimoAguardar.Id,
+                    FechaProcesamiento = DateTime.UtcNow
+                };
+                await _servicio.GuardarResultadoAnalizadorDeEstAnimo(resultadoAnalizadorEstadoAnimo);
             }
             return View("ResultadoAnalizadorEstadoAnimo", model);
         }
