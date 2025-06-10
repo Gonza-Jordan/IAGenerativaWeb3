@@ -10,6 +10,7 @@ namespace IAGenerativaDemo.Web.Controllers
     {
         private readonly IClasificacionTextoService _servicio;
 
+
         public TextoController(IClasificacionTextoService servicio)
         {
             _servicio = servicio;
@@ -58,8 +59,10 @@ namespace IAGenerativaDemo.Web.Controllers
         }
 
         [HttpPost]
+
         public async Task<IActionResult> AnalizadorTextos(TextoViewModel model)
-        {            
+        {           
+
             var resultados = _servicio.ClasificarPartes(model.Texto);
 
             int total = resultados.Count;
