@@ -1,20 +1,29 @@
-﻿using Microsoft.ML;
+﻿using IAGenerativa.Data.EF;
+using IAGenerativa.Data.Enums;
+using IAGenerativa.Data.UnitOfWork;
+using IAGenerativa.Logica.Servicios.Interfaces;
+using Microsoft.ML;
 using Microsoft.ML.Data;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Linq;
 
 namespace IAGenerativaDemo.Business.Servicios
 {
-    public class ClasificacionTextoService
+    public class ClasificacionTextoService : IClasificacionTextoService
     {
         private readonly MLContext mlContext;
         private readonly PredictionEngine<TextoInput, TextoPrediccion> predEngine;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public ClasificacionTextoService()
+        public ClasificacionTextoService(IUnitOfWork unitOfWork)
         {
+            _unitOfWork = unitOfWork;
             mlContext = new MLContext();
             predEngine = EntrenarModelo();
         }
-        //Metodo para cargar oraciones formales o informales
+
+        // ============ ML.NET Formal/Informal =============
         private PredictionEngine<TextoInput, TextoPrediccion> EntrenarModelo()
         {
             var datos = new List<TextoInput>
@@ -40,7 +49,6 @@ namespace IAGenerativaDemo.Business.Servicios
                 new TextoInput { Texto = "Nos vemos más tarde.", Etiqueta = "Informal" },
             };
 
-
             var data = mlContext.Data.LoadFromEnumerable(datos);
 
             var pipeline = mlContext.Transforms.Text.FeaturizeText("TextoFeaturizado", nameof(TextoInput.Texto))
@@ -49,20 +57,19 @@ namespace IAGenerativaDemo.Business.Servicios
                 .Append(mlContext.Transforms.Conversion.MapKeyToValue("Prediccion", "PredictedLabel"));
 
             var model = pipeline.Fit(data);
-
             return mlContext.Model.CreatePredictionEngine<TextoInput, TextoPrediccion>(model);
         }
-        //Metodo que clasifica segun la etiqueta de la oracion.
+
         public string Clasificar(string texto)
         {
             var resultado = predEngine.Predict(new TextoInput { Texto = texto });
             return resultado.Prediccion;
         }
+
         public List<(string Frase, string Etiqueta)> ClasificarPartes(string textoCompleto)
         {
-            // Separá en oraciones.
             var oraciones = textoCompleto
-                .Split(new[] { '.', '!', '?', ';', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                .Split(new[] { '.', '!', '?', ';', '\n' }, System.StringSplitOptions.RemoveEmptyEntries)
                 .Select(o => o.Trim())
                 .Where(o => !string.IsNullOrEmpty(o))
                 .ToList();
@@ -75,7 +82,7 @@ namespace IAGenerativaDemo.Business.Servicios
             }
             return resultados;
         }
-        //Metodo para calcular porcentajes
+
         public (double PorcentajeFormal, double PorcentajeInformal) CalcularPorcentajeFormalInformal(string textoCompleto)
         {
             var partes = ClasificarPartes(textoCompleto);
@@ -91,6 +98,7 @@ namespace IAGenerativaDemo.Business.Servicios
 
             return (porcentajeFormal, porcentajeInformal);
         }
+
         public string DetectarAmbito(string texto)
         {
             texto = texto.ToLower();
@@ -107,19 +115,45 @@ namespace IAGenerativaDemo.Business.Servicios
                 return "Comercial";
             return "General";
         }
-        public string TransformarTexto(string texto, string opcion)
+
+        public async Task<List<string>> DetectarAmbitosPorPalabrasAsync(string texto)
         {
-            if (opcion == "Formal")
+            var palabras = texto
+                .ToLower()
+                .Split(new[] { ' ', '.', ',', ';', ':', '!', '?' }, System.StringSplitOptions.RemoveEmptyEntries);
+
+            var palabrasClave = await _unitOfWork.GetRepository<PalabraClave>()
+                .GetAllAsync();
+
+            var relaciones = await _unitOfWork.GetRepository<PalabraClaveAmbito>()
+                .GetAllAsync();
+
+            var ambitos = await _unitOfWork.GetRepository<Ambito>()
+                .GetAllAsync();
+
+            var ambitosDetectados = new HashSet<string>();
+
+            foreach (var palabra in palabras)
             {
-                // Ejemplo de transformación: simplemente hace el texto en mayúsculas y agrega formalidad.
-                return "Estimado/a: " + texto.ToUpper();
+                var pcs = palabrasClave.Where(pc => pc.Texto.ToLower() == palabra);
+
+                foreach (var pc in pcs)
+                {
+                    var rels = relaciones.Where(r => r.PalabraClaveId == pc.Id);
+                    foreach (var rel in rels)
+                    {
+                        var ambito = ambitos.FirstOrDefault(a => a.Id == rel.AmbitoId);
+                        if (ambito != null)
+                            ambitosDetectados.Add(ambito.Nombre);
+                    }
+                }
             }
-            else
-            {
-                // Ejemplo de transformación: lo hace en minúsculas y lo simplifica.
-                return "Che: " + texto.ToLower();
-            }
+            if (ambitosDetectados.Count == 0)
+                ambitosDetectados.Add("General");
+
+            return ambitosDetectados.ToList();
         }
+
         public string DetectarEstadoAnimo(string texto)
         {
             var positivo = new[] { "feliz", "alegre", "genial", "excelente", "fantástico", "bien", "contento" };
@@ -134,7 +168,69 @@ namespace IAGenerativaDemo.Business.Servicios
             return "Neutro";
         }
 
+        public async Task<string> DetectarEstadoAnimoAsync(string texto)
+        {
+            texto = texto.ToLower();
+            var estados = await _unitOfWork.GetRepository<EstadosAnimo>().GetAllAsync();
+
+            if (estados.Any(e => e.TipoId == (int)TipoEstadoAnimoEnum.Positivo && texto.Contains(e.Nombre.ToLower())))
+                return "Positivo";
+            if (estados.Any(e => e.TipoId == (int)TipoEstadoAnimoEnum.Negativo && texto.Contains(e.Nombre.ToLower())))
+                return "Negativo";
+            return "Neutro";
+        }
+
+        public string TransformarTexto(string texto, string opcion)
+        {
+            if (opcion == "Formal")
+                return "Estimado/a: " + texto.ToUpper();
+            else
+                return "Che: " + texto.ToLower();
+        }
+
+        public async Task<TipoEstadoAnimo> ObtenerTipoEstadoDeAnimoPorNombre(string nombre)
+        {
+            nombre = nombre.ToLower();
+            return await _unitOfWork.GetRepository<TipoEstadoAnimo>().GetOne(x => x.Nombre.ToLower().Trim() == nombre.ToLower().Trim());
+        }
+
+        public async Task<Ambito> ObtenerAmbitoPorNombre(string nombre)
+        {
+            nombre = nombre.ToLower();
+            return await _unitOfWork.GetRepository<Ambito>().GetOne(x => x.Nombre.ToLower().Trim() == nombre.ToLower().Trim());
+        }
+
+        public async Task<Clasificacion> ObtenerClasificacionPorNombre(string nombre)
+        {
+            nombre = nombre.ToLower();
+            return await _unitOfWork.GetRepository<Clasificacion>().GetOne(x => x.Nombre.ToLower().Trim() == nombre.ToLower().Trim());
+        }
+
+        public async Task GuardarResultadoAnalizadorDeTexto(ResultadoAnalizadorDeTexto resultadoAnalizadorDeTexto)
+        {
+            await _unitOfWork.GetRepository<ResultadoAnalizadorDeTexto>().AddAsync(resultadoAnalizadorDeTexto);
+            await _unitOfWork.SaveAsync();
+        }
+
+        public async Task GuardarResultadoTransformadorDeTexto(ResultadoTransformadorDeTexto transformadorDeTexto)
+        {
+            await _unitOfWork.GetRepository<ResultadoTransformadorDeTexto>().AddAsync(transformadorDeTexto);
+            await _unitOfWork.SaveAsync();
+        }
+
+        public async Task GuardarResultadoAnalizadorDeOraciones(ResultadoAnalizadorOracione resAnalizadorDeOraciones)
+        {
+            await _unitOfWork.GetRepository<ResultadoAnalizadorOracione>().AddAsync(resAnalizadorDeOraciones);
+            await _unitOfWork.SaveAsync();
+        }
+
+        public async Task GuardarResultadoAnalizadorDeEstAnimo(ResultadoAnalizadorEstadoAnimo resAnalizadorEstadoAnimo)
+        {
+            await _unitOfWork.GetRepository<ResultadoAnalizadorEstadoAnimo>().AddAsync(resAnalizadorEstadoAnimo);
+            await _unitOfWork.SaveAsync();
+        }
     }
+
     public class TextoInput
     {
         public required string Texto { get; set; }
@@ -146,5 +242,4 @@ namespace IAGenerativaDemo.Business.Servicios
         [ColumnName("Prediccion")]
         public string Prediccion { get; set; }
     }
-
 }
