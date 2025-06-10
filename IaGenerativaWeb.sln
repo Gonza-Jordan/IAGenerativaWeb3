@@ -1,11 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35919.96 d17.13
+VisualStudioVersion = 17.13.35919.96
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IAGenerativaWeb", "IaGenerativaWeb\IAGenerativaWeb.csproj", "{91AC9C39-74FA-438E-B346-DF439388DC97}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IAGenerativa.Logica", "IAGenerativa.Logica\IAGenerativa.Logica.csproj", "{53C7D3B8-F9FB-4274-950D-4A4ECC612062}"
+	ProjectSection(ProjectDependencies) = postProject
+		{55F7826B-BA93-4FC7-985A-3588817D6B99} = {55F7826B-BA93-4FC7-985A-3588817D6B99}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IAGenerativa.Data", "IAGenerativa.Data\IAGenerativa.Data.csproj", "{55F7826B-BA93-4FC7-985A-3588817D6B99}"
 EndProject
