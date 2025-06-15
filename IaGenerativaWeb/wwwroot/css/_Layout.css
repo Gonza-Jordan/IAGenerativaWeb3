@@ -1,0 +1,77 @@
+﻿html, body {
+    height: 100%;
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    color: #fff;
+    overflow-x: hidden;
+}
+
+.layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+}
+
+a {
+    color: #6C63FF;
+    transition: color 0.3s ease;
+}
+
+    a:hover {
+        color: #FF69B4;
+    }
+
+.navbar {
+    background-color: rgba(10, 10, 20, 0.8);
+    border-bottom: 1px solid #333;
+}
+
+.footer {
+    background-color: #111;
+    color: #888;
+    border-top: 1px solid #222;
+    text-align: center;
+    height: 80px;
+    width: 100%;
+}
+
+.footer-content {
+    margin: 1rem;
+}
+
+/* 🎆 Animación tipo "sparkles" o "mesh" como fondo */
+#animated-bg {
+    position: fixed;
+    z-index: -1;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(ellipse at bottom, #002331, #2d0051, #330036);
+    animation: backgroundMove 20s infinite ease-in-out;
+    background-size: 400% 400%;
+}
+
+@keyframes backgroundMove {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+

@@ -2,23 +2,29 @@
 @{
     ViewData["Title"] = "Resultado - Analizador de Oraciones";
 }
-<h2>Resultado - Analizador de Oraciones</h2>
+<div class="container">
 
-<h4>Texto ingresado:</h4>
-<div>@Model.Texto</div>
+    <h2 class="text title" >Resultado - Analizador de Oraciones</h2>
 
-<hr />
+<h4 class="text subtitle">Texto ingresado:</h4>
+<div class="textarea">@Model.Texto</div>
 
-<strong>Resultado:</strong>
-<div>
+<div class="horizontal">
+
+    <p class="text subtitle">Resultado:</p>
     @if (!string.IsNullOrEmpty(Model.Clasificacion))
     {
-        @Model.Clasificacion
+        <p class="text result">
+            @Model.Clasificacion
+        </p>
     }
     else
     {
-        <span style="color:red;">No se pudo analizar el texto.</span>
+        <span class="text">No se pudo analizar el texto.</span>
     }
-</div>
 
-<a href="@Url.Action("AnalizadorOraciones", "Texto")">Volver</a>
+</div>
+<a href="@Url.Action("AnalizadorOraciones", "Texto")" class="back">Volver</a>
+</div>
+<link rel="stylesheet" href="~/css/index.css" />
+

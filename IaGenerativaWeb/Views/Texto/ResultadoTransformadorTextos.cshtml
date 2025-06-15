@@ -2,17 +2,18 @@
 @{
     ViewData["Title"] = "Resultado - Transformar Texto";
 }
-<h2>Resultado - Transformar Texto</h2>
+<div class="container"> 
 
-<h4>Texto ingresado:</h4>
-<div>@Model.Texto</div>
+<h2 class="text title">Resultado - Transformar Texto</h2>
 
-<hr />
+<h4 class="text subtitle">Texto ingresado:</h4>
+<div class="textarea">@Model.Texto</div>
 
-<strong>Resultado:</strong>
+
+<strong class="text subtitle">Resultado:</strong>
 @if (!string.IsNullOrEmpty(Model.TextoTransformado))
 {
-    <div class="alert alert-info" style="margin-bottom:1em;">
+    <div class="textarea" >
         @Model.TextoTransformado
     </div>
 }
@@ -21,4 +22,7 @@ else
     <div style="color:red;">No se pudo transformar el texto.</div>
 }
 
-<a href="@Url.Action("TransformadorTextos", "Texto")">Volver</a>
+    <a href="@Url.Action("TransformadorTextos", "Texto")" class="back">Volver</a>
+
+</div>
+<link rel="stylesheet" href="~/css/index.css" />

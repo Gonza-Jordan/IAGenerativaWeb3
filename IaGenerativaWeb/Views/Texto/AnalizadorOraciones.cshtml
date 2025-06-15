@@ -2,11 +2,13 @@
 @{
     ViewData["Title"] = "Analizador de Oraciones";
 }
-<h2>Analizador de Oraciones</h2>
-<form asp-action="AnalizadorOraciones" method="post">
-    <label for="texto">Ingrese el texto:</label><br />
-    <textarea id="texto" name="Texto" rows="4" cols="60">@Model?.Texto</textarea><br />
-    <button type="submit">Analizar</button>
+<div class="container">
+
+<h2 class="text title">Analizador de Oraciones</h2>
+<form asp-action="AnalizadorOraciones" method="post" class="form container">
+    <label for="texto" class="text subtitle">Ingrese la oración a analizar:</label>
+    <textarea id="texto" name="Texto" rows="4" cols="60" class="textarea">@Model?.Texto</textarea>
+    <button type="submit" class="button">Analizar</button>
 </form>
 @if (!string.IsNullOrEmpty(Model?.Texto))
 {
@@ -14,3 +16,9 @@
     <h4>Texto ingresado:</h4>
     <div>@Model.Texto</div>
 }
+</div>
+
+<a href="@Url.Action("AnalizadorOraciones", "Texto")" class="back">Volver</a>
+
+
+<link rel="stylesheet" href="~/css/index.css" />

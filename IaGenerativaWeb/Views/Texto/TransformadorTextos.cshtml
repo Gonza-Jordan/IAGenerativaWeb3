@@ -2,24 +2,35 @@
 @{
     ViewData["Title"] = "Transformar Texto";
 }
-<h2>Transformar texto</h2>
-<form asp-action="TransformadorTextos" method="post">
-    <div class="form-group">
-        <label for="Texto">Texto:</label>
-        <textarea class="form-control" name="Texto" id="Texto" rows="3">@Model?.Texto</textarea>
-    </div>
-    <div class="form-group">
-        <label>Transformar a:</label>
+
+<div class="container">
+
+<h2 class="text title">Transformar texto</h2>
+<form asp-action="TransformadorTextos" method="post" class="form container">
+        <label for="Texto" class="text subtitle">Texto a transformar:</label>
+        <textarea name="Texto" id="Texto" rows="3" class="textarea">@Model?.Texto</textarea>
+        <label class="text subtitle">Transformar a:</label>
+        <div class="horizontal">
+            <div>
         <input type="radio" id="Formal" name="OpcionTransformar" value="Formal" @(Model?.OpcionTransformar == "Formal" ? "checked" : "") />
         <label for="Formal">Formal</label>
+            </div>
+            <div>
         <input type="radio" id="Informal" name="OpcionTransformar" value="Informal" @(Model?.OpcionTransformar == "Informal" ? "checked" : "") />
         <label for="Informal">Informal</label>
-    </div>
-    <button type="submit" class="btn btn-primary">Transformar</button>
+            </div>
+        </div>
+    <button type="submit" class="button">Transformar</button>
 </form>
+</div>
 @if (!string.IsNullOrEmpty(Model?.Texto))
 {
     <hr />
     <h4>Texto ingresado:</h4>
     <div>@Model.Texto</div>
 }
+
+<a href="@Url.Action("AnalizadorOraciones", "Texto")" class="back">Volver</a>
+
+<link rel="stylesheet" href="~/css/index.css" />
+

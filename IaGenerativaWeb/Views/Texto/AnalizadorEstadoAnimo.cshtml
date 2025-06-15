@@ -2,14 +2,12 @@
 @{
     ViewData["Title"] = "Analizador de Estado de Ánimo";
 }
-<div class="container" style="margin-top: 40px; max-width:600px;">
-    <h2 class="mb-4">Analizador de Estado de Ánimo</h2>
-    <form asp-action="AnalizadorEstadoAnimo" method="post">
-        <div class="mb-3">
-            <label for="texto" class="form-label">Ingrese el texto:</label>
-            <textarea id="texto" name="Texto" class="form-control" rows="4">@Model?.Texto</textarea>
-        </div>
-        <button type="submit" class="btn btn-primary">Analizar</button>
+<div class="container">
+    <h2 class="text title">Analizador de Estado de Ánimo</h2>
+    <form asp-action="AnalizadorEstadoAnimo" method="post" class="form container">
+            <label for="texto" class="text subtitle">Ingrese el texto a analizar:</label>
+            <textarea id="texto" name="Texto" rows="4" class="textarea">@Model?.Texto</textarea>
+        <button type="submit" class="button">Analizar</button>
     </form>
     @if (!string.IsNullOrEmpty(Model?.Texto))
     {
@@ -20,7 +18,15 @@
         @if (!string.IsNullOrEmpty(Model?.ResultadoEstadoAnimo))
         {
             <strong>Resultado:</strong>
-            <div class="alert alert-info mt-2">Estado de ánimo detectado: <b>@Model.ResultadoEstadoAnimo</b></div>
+            <div >Estado de ánimo detectado: 
+                <p class="result">@Model.ResultadoEstadoAnimo</p>
+                </div>
         }
     }
 </div>
+
+<a href="@Url.Action("AnalizadorOraciones", "Texto")" class="back">Volver</a>
+
+
+<link rel="stylesheet" href="~/css/index.css" />
+

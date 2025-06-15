@@ -2,14 +2,15 @@
 @{
     ViewData["Title"] = "Resultado - Estado de Ánimo";
 }
-<div class="container" style="margin-top: 40px; max-width:600px;">
-    <h2>Resultado - Estado de Ánimo</h2>
-    <h5 class="mt-4">Texto ingresado:</h5>
-    <div>@Model.Texto</div>
-    <hr />
-    <strong>Resultado:</strong>
-    <div class="alert alert-info mt-2">
+<div class="container">
+    <h2 class="text title">Resultado - Estado de Ánimo</h2>
+    <h5 class="text subtitle">Texto ingresado:</h5>
+    <div class="textarea">@Model.Texto</div>
+    <div class="text result">
         Estado de ánimo detectado: <b>@Model.ResultadoEstadoAnimo</b>
     </div>
-    <a href="@Url.Action("AnalizadorEstadoAnimo", "Texto")" class="btn btn-secondary mt-3">Volver</a>
+    <a href="@Url.Action("AnalizadorEstadoAnimo", "Texto")" class="back">Volver</a>
 </div>
+
+<link rel="stylesheet" href="~/css/index.css" />
+
