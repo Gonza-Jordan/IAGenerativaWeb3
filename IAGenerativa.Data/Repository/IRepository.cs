@@ -10,6 +10,7 @@ namespace IAGenerativa.Data.Repository
     public interface IRepository<T> where T : class
     {
         Task<IEnumerable<T>> GetAllAsync();
+        Task<IEnumerable<T>> GetAllAsync(string includeProperties);
         Task<T> GetOne(Expression<Func<T, bool>> predicate);
         Task AddAsync(T entity);
         Task Update(object id, T entity);

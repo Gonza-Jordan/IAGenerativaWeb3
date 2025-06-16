@@ -134,5 +134,7 @@ public partial class IagenerativaDbContext : DbContext
 
     public DbSet<PalabraClave> PalabrasClave { get; set; }
     public DbSet<PalabraClaveAmbito> PalabraClaveAmbitos { get; set; }
+    public virtual DbSet<FraseClasificacion> FraseClasificacion { get; set; } = null!;
+
 
 }

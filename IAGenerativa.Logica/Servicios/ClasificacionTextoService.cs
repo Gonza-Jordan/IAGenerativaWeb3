@@ -26,28 +26,15 @@ namespace IAGenerativaDemo.Business.Servicios
         // ============ ML.NET Formal/Informal =============
         private PredictionEngine<TextoInput, TextoPrediccion> EntrenarModelo()
         {
-            var datos = new List<TextoInput>
-            {
-                // Formales
-                new TextoInput { Texto = "Estimado señor, le informo que su pedido fue procesado.", Etiqueta = "Formal" },
-                new TextoInput { Texto = "Apreciado cliente, agradecemos su consulta.", Etiqueta = "Formal" },
-                new TextoInput { Texto = "Por favor, envíe la documentación solicitada.", Etiqueta = "Formal" },
-                new TextoInput { Texto = "Nos dirigimos a usted a fin de comunicarle...", Etiqueta = "Formal" },
-                new TextoInput { Texto = "Le saludamos atentamente.", Etiqueta = "Formal" },
-                new TextoInput { Texto = "Quedamos a su disposición para cualquier consulta.", Etiqueta = "Formal" },
-                new TextoInput { Texto = "Sr. Juan, agradecemos su pronta respuesta.", Etiqueta = "Formal" },
-                new TextoInput { Texto = "Agradecemos su atención.", Etiqueta = "Formal" },
+            var frases = _unitOfWork.GetRepository<FraseClasificacion>()
+                .GetAllAsync("Clasificacion").Result.ToList();
 
-                // Informales
-                new TextoInput { Texto = "Che, ya te mandé el archivo!", Etiqueta = "Informal" },
-                new TextoInput { Texto = "Dale, nos vemos!", Etiqueta = "Informal" },
-                new TextoInput { Texto = "Mandame el archivo cuando puedas.", Etiqueta = "Informal" },
-                new TextoInput { Texto = "Pasame la data así lo hago.", Etiqueta = "Informal" },
-                new TextoInput { Texto = "Hola, qué hacés?", Etiqueta = "Informal" },
-                new TextoInput { Texto = "Fijate si podés.", Etiqueta = "Informal" },
-                new TextoInput { Texto = "Te mando un saludo!", Etiqueta = "Informal" },
-                new TextoInput { Texto = "Nos vemos más tarde.", Etiqueta = "Informal" },
-            };
+
+            var datos = frases.Select(f => new TextoInput
+            {
+                Texto = f.Texto,
+                Etiqueta = f.Clasificacion.Nombre
+            }).ToList();
 
             var data = mlContext.Data.LoadFromEnumerable(datos);
 
@@ -57,8 +44,10 @@ namespace IAGenerativaDemo.Business.Servicios
                 .Append(mlContext.Transforms.Conversion.MapKeyToValue("Prediccion", "PredictedLabel"));
 
             var model = pipeline.Fit(data);
+
             return mlContext.Model.CreatePredictionEngine<TextoInput, TextoPrediccion>(model);
         }
+
 
         public string Clasificar(string texto)
         {

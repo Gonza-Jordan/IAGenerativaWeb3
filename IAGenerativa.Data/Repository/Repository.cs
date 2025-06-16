@@ -56,6 +56,19 @@ namespace IAGenerativa.Data.Repository
             {
                 _unitOfWork.Context.Set<T>().Remove(entity);
             }            
-        }        
+        }
+        public async Task<IEnumerable<T>> GetAllAsync(string includeProperties)
+        {
+            IQueryable<T> query = _unitOfWork.Context.Set<T>();
+            if (!string.IsNullOrWhiteSpace(includeProperties))
+            {
+                foreach (var includeProperty in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    query = query.Include(includeProperty.Trim());
+                }
+            }
+            return await query.ToListAsync();
+        }
+
     }
 }
