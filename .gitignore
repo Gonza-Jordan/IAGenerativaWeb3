@@ -142,3 +142,4 @@ MigrationBackup/
 .copilotindices/
 *.vsidx
 
+IaGenerativaWeb/appsettings.json

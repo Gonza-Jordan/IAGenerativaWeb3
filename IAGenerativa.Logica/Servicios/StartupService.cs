@@ -1,5 +1,6 @@
 ﻿// IStartupService.cs
 using System.Threading.Tasks;
+using IAGenerativa.Logica.Servicios.Interfaces;
 using IAGenerativaDemo.Business.Servicios;
 
 namespace IAGenerativaDemo.Business.Servicios
@@ -12,16 +13,16 @@ namespace IAGenerativaDemo.Business.Servicios
 
 public class StartupService : IStartupService
 {
-    private readonly ClasificacionTextoService _clasificacionService;
+    private readonly IClasificacionTextoService _clasificacionService;
 
-    public StartupService(ClasificacionTextoService clasificacionService)
+    public StartupService(IClasificacionTextoService clasificacionService) 
     {
         _clasificacionService = clasificacionService;
     }
 
     public Task InitializeAsync()
     {
-        var testResult = _clasificacionService.Clasificar("Test de inicialización");
+        _clasificacionService.Clasificar("Test de inicialización");
         return Task.CompletedTask;
     }
 }

@@ -18,7 +18,7 @@ builder.Services.AddDbContext<IagenerativaDbContext>(options =>
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IClasificacionTextoService, ClasificacionTextoService>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-builder.Services.AddSingleton<ClasificacionTextoService>();
+builder.Services.AddScoped<ClasificacionTextoService>();
 builder.Services.AddTransient<IStartupService, StartupService>();
 
 
