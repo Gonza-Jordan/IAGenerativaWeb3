@@ -13,7 +13,7 @@ namespace IAGenerativa.Logica.Servicios.Interfaces
         List<(string Frase, string Etiqueta)> ClasificarPartes(string textoCompleto);
         (double PorcentajeFormal, double PorcentajeInformal) CalcularPorcentajeFormalInformal(string textoCompleto);
         string DetectarAmbito(string texto);
-        string TransformarTexto(string texto, string opcion);
+        Task<string> TransformarTexto(string texto, string opcion);
         Task<string> DetectarEstadoAnimoAsync(string texto);
         Task<TipoEstadoAnimo> ObtenerTipoEstadoDeAnimoPorNombre(string nombre);
         Task<Ambito> ObtenerAmbitoPorNombre(string nombre);

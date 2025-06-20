@@ -179,33 +179,26 @@ namespace IAGenerativaDemo.Business.Servicios
             httpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", "token");
 
-            Console.WriteLine($"Transformando texto: {textoOriginal} con tono {tonoDestino}");
-
             string instruccion = tonoDestino.ToLower() switch
             {
-                "formal" => $"Translate the following text to spanish and rewrite it in a formal style: \"{textoOriginal}\"",
-                "informal" => $"Translate the following text to spanish and rewrite it in an informal style: \"{textoOriginal}\"",
-                _ => $"Translate the following text to spanish and paraphrase it: \"{textoOriginal}\""
+                "formal" => $"Reescribí este texto en español con un tono formal: \"{textoOriginal}\". Devuelve UNICAMENTE el texto transformado",
+                "informal" => $"Reescribí este texto en español con un tono informal: \"{textoOriginal}\". Devuelve UNICAMENTE el texto transformado",
+                _ => $"Parafraseá este texto en español: \"{textoOriginal}\" . Devuelve UNICAMENTE el texto transformado"
             };
 
             var requestBody = new
             {
-                inputs = instruccion,
-                parameters = new
+                model = "deepseek-ai/DeepSeek-R1-fast",
+                messages = new[]
                 {
-                    max_new_tokens = 150,
-                    temperature = 0.3,
-                    top_p = 0.9,
-                    return_full_text = false
-                }
+            new { role = "user", content = instruccion }
+        },
+                stream = false
             };
 
             var content = new StringContent(JsonSerializer.Serialize(requestBody), Encoding.UTF8, "application/json");
 
-            // Endpoint para microsoft/phi-4
-            var response = await httpClient.PostAsync("https://api-inference.huggingface.co/models/microsoft/phi-4", content);
-
-            Console.WriteLine($"Respuesta del modelo: {response}");
+            var response = await httpClient.PostAsync("https://router.huggingface.co/nebius/v1/chat/completions", content);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -214,28 +207,27 @@ namespace IAGenerativaDemo.Business.Servicios
             }
 
             var json = await response.Content.ReadAsStringAsync();
-            var doc = JsonDocument.Parse(json);
 
-            Console.WriteLine($"Respuesta JSON: {json}");
-
-
-            // Phi-4 puede devolver formato diferente
             try
             {
-                Console.WriteLine("Intentando formato de respuesta estándar...");
-                var resultado = doc.RootElement[0].GetProperty("generated_text").GetString();
-                return resultado?.Replace(instruccion, "").Trim();
-            }
-            catch
-            {
-                Console.WriteLine("Fallo al obtener formato estándar, intentando formato de chat...");
-                // Si falla, intentar formato de chat
-                var resultado = doc.RootElement
+                var doc = JsonDocument.Parse(json);
+                var resultadoCompleto = doc.RootElement
                     .GetProperty("choices")[0]
                     .GetProperty("message")
                     .GetProperty("content")
                     .GetString();
-                return resultado;
+
+                string etiquetaCierre = "</think>";
+                int indice = resultadoCompleto.LastIndexOf(etiquetaCierre);
+
+                var resultado = resultadoCompleto.Substring(indice + etiquetaCierre.Length).Trim();
+
+                return resultado?.Trim() ?? "[Respuesta vacía]";
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al procesar JSON: {ex.Message}");
+                return "[Error] No se pudo interpretar la respuesta del modelo.";
             }
         }
 
