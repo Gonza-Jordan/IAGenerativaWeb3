@@ -7,6 +7,10 @@ using Microsoft.ML.Data;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Text.Json;
+using System.Text;
+using System.Net.Http.Headers;
+using System.Text.RegularExpressions;
 
 namespace IAGenerativaDemo.Business.Servicios
 {
@@ -169,12 +173,70 @@ namespace IAGenerativaDemo.Business.Servicios
             return "Neutro";
         }
 
-        public string TransformarTexto(string texto, string opcion)
+        public async Task<string> TransformarTexto(string textoOriginal, string tonoDestino)
         {
-            if (opcion == "Formal")
-                return "Estimado/a: " + texto.ToUpper();
-            else
-                return "Che: " + texto.ToLower();
+            using var httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", "token");
+
+            Console.WriteLine($"Transformando texto: {textoOriginal} con tono {tonoDestino}");
+
+            string instruccion = tonoDestino.ToLower() switch
+            {
+                "formal" => $"Translate the following text to spanish and rewrite it in a formal style: \"{textoOriginal}\"",
+                "informal" => $"Translate the following text to spanish and rewrite it in an informal style: \"{textoOriginal}\"",
+                _ => $"Translate the following text to spanish and paraphrase it: \"{textoOriginal}\""
+            };
+
+            var requestBody = new
+            {
+                inputs = instruccion,
+                parameters = new
+                {
+                    max_new_tokens = 150,
+                    temperature = 0.3,
+                    top_p = 0.9,
+                    return_full_text = false
+                }
+            };
+
+            var content = new StringContent(JsonSerializer.Serialize(requestBody), Encoding.UTF8, "application/json");
+
+            // Endpoint para microsoft/phi-4
+            var response = await httpClient.PostAsync("https://api-inference.huggingface.co/models/microsoft/phi-4", content);
+
+            Console.WriteLine($"Respuesta del modelo: {response}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                return $"[Error {response.StatusCode}] {error}";
+            }
+
+            var json = await response.Content.ReadAsStringAsync();
+            var doc = JsonDocument.Parse(json);
+
+            Console.WriteLine($"Respuesta JSON: {json}");
+
+
+            // Phi-4 puede devolver formato diferente
+            try
+            {
+                Console.WriteLine("Intentando formato de respuesta estándar...");
+                var resultado = doc.RootElement[0].GetProperty("generated_text").GetString();
+                return resultado?.Replace(instruccion, "").Trim();
+            }
+            catch
+            {
+                Console.WriteLine("Fallo al obtener formato estándar, intentando formato de chat...");
+                // Si falla, intentar formato de chat
+                var resultado = doc.RootElement
+                    .GetProperty("choices")[0]
+                    .GetProperty("message")
+                    .GetProperty("content")
+                    .GetString();
+                return resultado;
+            }
         }
 
         public async Task<TipoEstadoAnimo> ObtenerTipoEstadoDeAnimoPorNombre(string nombre)

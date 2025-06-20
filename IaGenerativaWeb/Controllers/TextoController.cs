@@ -16,13 +16,6 @@ namespace IAGenerativaDemo.Web.Controllers
             _servicio = servicio;
         }
 
-        // HOME GENERAL (OPCIONAL)
-        [HttpGet]
-        public IActionResult Analizar()
-        {
-            return View(new TextoViewModel());
-        }
-
         // ========== ANALIZADOR DE ORACIONES ==========
         [HttpGet]
         public IActionResult AnalizadorOraciones()
@@ -111,7 +104,7 @@ namespace IAGenerativaDemo.Web.Controllers
         {
             if (!string.IsNullOrWhiteSpace(model.Texto) && !string.IsNullOrWhiteSpace(model.OpcionTransformar))
             {
-                model.TextoTransformado = _servicio.TransformarTexto(model.Texto, model.OpcionTransformar);
+                model.TextoTransformado = await _servicio.TransformarTexto(model.Texto, model.OpcionTransformar);
                 model.AmbitoSugerido = _servicio.DetectarAmbito(model.TextoTransformado);
 
                 Ambito ambitoAguardar = await _servicio.ObtenerAmbitoPorNombre(model.AmbitoSugerido);
