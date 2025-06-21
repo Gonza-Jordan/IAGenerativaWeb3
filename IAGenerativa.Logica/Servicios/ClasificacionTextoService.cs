@@ -2,15 +2,17 @@
 using IAGenerativa.Data.Enums;
 using IAGenerativa.Data.UnitOfWork;
 using IAGenerativa.Logica.Servicios.Interfaces;
+using IAGenerativaWeb.Models.Configuration.MLModelConfiguration;
+using Microsoft.Extensions.Options;
 using Microsoft.ML;
 using Microsoft.ML.Data;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Linq;
-using System.Text.Json;
-using System.Text;
 using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace IAGenerativaDemo.Business.Servicios
 {
@@ -19,12 +21,16 @@ namespace IAGenerativaDemo.Business.Servicios
         private readonly MLContext mlContext;
         private readonly PredictionEngine<TextoInput, TextoPrediccion> predEngine;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly HttpClient _httpClient;
+        MLModelConfiguration _mlModelConfiguration;
 
-        public ClasificacionTextoService(IUnitOfWork unitOfWork)
+        public ClasificacionTextoService(IUnitOfWork unitOfWork, HttpClient httpClient, IOptions<MLModelConfiguration> mlModelConfiguration)
         {
             _unitOfWork = unitOfWork;
             mlContext = new MLContext();
             predEngine = EntrenarModelo();
+            _httpClient = httpClient;
+            _mlModelConfiguration = mlModelConfiguration.Value;
         }
 
         // ============ ML.NET Formal/Informal =============
@@ -174,10 +180,10 @@ namespace IAGenerativaDemo.Business.Servicios
         }
 
         public async Task<string> TransformarTexto(string textoOriginal, string tonoDestino)
-        {
-            using var httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", "token");
+        {            
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", _mlModelConfiguration.AccessToken);
+
 
             string instruccion = tonoDestino.ToLower() switch
             {
@@ -188,7 +194,7 @@ namespace IAGenerativaDemo.Business.Servicios
 
             var requestBody = new
             {
-                model = "deepseek-ai/DeepSeek-R1-fast",
+                model = _mlModelConfiguration.ModelName,
                 messages = new[]
                 {
             new { role = "user", content = instruccion }
@@ -198,7 +204,7 @@ namespace IAGenerativaDemo.Business.Servicios
 
             var content = new StringContent(JsonSerializer.Serialize(requestBody), Encoding.UTF8, "application/json");
 
-            var response = await httpClient.PostAsync("https://router.huggingface.co/nebius/v1/chat/completions", content);
+            var response = await _httpClient.PostAsync(_mlModelConfiguration.UrlBaseModel, content);
 
             if (!response.IsSuccessStatusCode)
             {

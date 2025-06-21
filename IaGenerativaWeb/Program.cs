@@ -4,9 +4,8 @@ using IAGenerativa.Data.Repository;
 using IAGenerativa.Data.UnitOfWork;
 using IAGenerativa.Logica.Servicios.Interfaces;
 using IAGenerativaDemo.Business.Servicios;
+using IAGenerativaWeb.Models.Configuration.MLModelConfiguration;
 using Microsoft.EntityFrameworkCore;
-using System;
-using IAGenerativaDemo.Business.Servicios;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,10 +14,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<IagenerativaDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddHttpClient();
+
+
+
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<IClasificacionTextoService, ClasificacionTextoService>();
+builder.Services.AddOptions().Configure<MLModelConfiguration>(builder.Configuration.GetSection("IAGenerativeModel"))
+    .AddScoped<IClasificacionTextoService, ClasificacionTextoService>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-builder.Services.AddScoped<ClasificacionTextoService>();
+//builder.Services.AddScoped<ClasificacionTextoService>();
 builder.Services.AddTransient<IStartupService, StartupService>();
 
 
