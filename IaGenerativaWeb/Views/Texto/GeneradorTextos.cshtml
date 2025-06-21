@@ -1,0 +1,20 @@
+﻿@model IAGenerativaDemo.Web.Models.TextoViewModel
+
+@{
+    ViewData["Title"] = "Generador de Textos";
+}
+
+<div class="container">
+    <h2 class="text title">Generador de Textos</h2>
+    <form asp-action="GeneradorTextos" method="post" class="form container">
+            <label for="texto" class="text subtitle">Ingrese el texto a re generar:</label>
+            <textarea id="texto" name="Texto" rows="6" class="textarea">@Model?.Texto</textarea>
+        <button type="submit" class="button">Generar</button>
+    </form>
+</div>
+
+<a href="@Url.Action("GeneradorTextos", "Texto")" class="back">Volver</a>
+
+
+<link rel="stylesheet" href="~/css/index.css" />
+
