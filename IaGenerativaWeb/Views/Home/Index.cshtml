@@ -1,23 +1,73 @@
-﻿@{
-    ViewData["Title"] = "Bienvenido a la IA Generativa Demo";
+﻿﻿@{
+    ViewData["Title"] = "IA Generativa";
 }
 
-<div class="container">
-    <h1 class="text title">IA Generativa Demo</h1>
-    <p class="text">
-        Probá las funcionalidades de análisis y transformación de textos.<br>
+<div class="container" style="max-width:1100px;">
+    <h1 class="text title mt-4 mb-2 text-center">IA Generativa</h1>
+    <p class="text text-center mb-5" style="font-size:1.15rem;">
+        Explorá las funcionalidades de análisis y transformación de textos asistidas por inteligencia artificial.<br>
+        Elegí la herramienta que más se ajuste a tu necesidad y descubrí cómo puede ayudarte.
     </p>
-    <div class="container actions">
-        <p class="text subtitle">
-            Elegí una opción para empezar
-        </p>
-        <div class="container buttons">
-            <a class="button text" href="/Texto/AnalizadorOraciones">Analizador de Oraciones</a>
-            <a class="button text" href="/Texto/AnalizadorTextos">Analizador de Textos</a>
-            <a class="button text" href="/Texto/TransformadorTextos"> Transformador de Textos</a>
-            <a class="button text" href="/Texto/AnalizadorEstadoAnimo">Analizador de Estado de Ánimo</a>
+
+    <div class="row justify-content-center g-4">
+
+        <div class="col-12 col-md-6 col-lg-6">
+            <div class="card shadow-lg h-100 text-center">
+                <div class="card-body d-flex flex-column">
+                    <h4 class="card-title mb-2">📝 Analizador de Oraciones</h4>
+                    <p class="card-text flex-grow-1">
+                        Analizá una oración para descubrir si su estilo es <strong>formal</strong> o <strong>informal</strong>.
+                        Ideal para frases cortas y conocer su nivel de formalidad antes de usarlas en mensajes, mails o comunicaciones.
+                    </p>
+                    <a class="btn btn-primary mt-3" href="/Texto/AnalizadorOraciones">Probar Analizador de Oraciones</a>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-12 col-md-6 col-lg-6">
+            <div class="card shadow-lg h-100 text-center">
+                <div class="card-body d-flex flex-column">
+                    <h4 class="card-title mb-2">📊 Analizador de Textos</h4>
+                    <p class="card-text flex-grow-1">
+                        El análisis más completo: ingresá un texto largo y obtené el porcentaje de contenido <strong>formal</strong> e <strong>informal</strong>.
+                        Además, te sugiere el <strong>ámbito más adecuado</strong> para su uso (laboral, educativo, casual, etc.) y detecta la <strong>emoción predominante</strong> en el texto.
+                        Ideal para informes, mails o documentos extensos.
+                    </p>
+                    <a class="btn btn-primary mt-3" href="/Texto/AnalizadorTextos">Probar Analizador de Textos</a>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-12 col-md-6 col-lg-6">
+            <div class="card shadow-lg h-100 text-center">
+                <div class="card-body d-flex flex-column">
+                    <h4 class="card-title mb-2">🔄 Transformador de Textos</h4>
+                    <p class="card-text flex-grow-1">
+                        Transformá rápidamente una frase o texto en <strong>formal</strong> o <strong>informal</strong> según lo que necesites.
+                        Perfecto para adaptar mensajes a diferentes contextos, como redactar correos formales o pasarlos a un tono más cercano y amistoso.
+                    </p>
+                    <a class="btn btn-primary mt-3" href="/Texto/TransformadorTextos">Probar Transformador de Textos</a>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-12 col-md-6 col-lg-6">
+            <div class="card shadow-lg h-100 text-center">
+                <div class="card-body d-flex flex-column">
+                    <h4 class="card-title mb-2">😊 Analizador de Estado de Ánimo</h4>
+                    <p class="card-text flex-grow-1">
+                        Descubrí el <strong>estado de ánimo</strong> que transmite tu mensaje. Esta herramienta detecta si el texto refleja emociones como alegría, tristeza, enojo, sorpresa, entre otros.
+                        Te ayuda a entender el impacto emocional de tus palabras.
+                    </p>
+                    <a class="btn btn-primary mt-3" href="/Texto/AnalizadorEstadoAnimo">Probar Analizador de Estados</a>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
 <link rel="stylesheet" href="~/css/index.css" />
