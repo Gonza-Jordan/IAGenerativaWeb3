@@ -7,7 +7,6 @@ namespace IAGenerativaDemo.Web.Models
         [Required(ErrorMessage = "Debe ingresar un texto, el campo no puede quedar vacio.")]
         public string Texto { get; set; }
         public string Clasificacion { get; set; }
-        [Required(ErrorMessage = "Debe seleccionar entre formal e informal.")]
         public string OpcionTransformar { get; set; }
         public string TextoTransformado { get; set; }
         public double PorcentajeFormal { get; set; }
