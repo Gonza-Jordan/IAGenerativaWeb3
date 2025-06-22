@@ -4,11 +4,11 @@
     ViewData["Title"] = "Analizador de Textos";
 }
 
-<div class="container">
-    <h2 class="text title">Analizador de Textos</h2>
-    <form asp-action="AnalizadorTextos" method="post" class="form container">
-            <label for="texto" class="text subtitle">Ingrese el texto a analizar:</label>
-            <textarea id="texto" name="Texto" rows="6" class="textarea">@Model?.Texto</textarea>
+<div class="container" style="max-width: 1000px;">
+    <h2 class="text title mb-4 text-center">Analizador de Textos</h2>
+    <form asp-action="AnalizadorTextos" method="post" class="form shadow-lg rounded p-4 mb-4" style="background:rgba(30,30,50,0.97);">
+        <label for="texto" class="text subtitle mb-2">Ingrese el texto a analizar:</label>
+        <textarea id="texto" name="Texto" rows="6" class="form-control mb-3 textarea" style="background:#f5e6fa;">@Model?.Texto</textarea>
         <button type="submit" class="button">Analizar</button>
     </form>
 </div>
