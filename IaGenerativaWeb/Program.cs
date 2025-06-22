@@ -2,6 +2,7 @@
 using IAGenerativa.Data.EF;
 using IAGenerativa.Data.Repository;
 using IAGenerativa.Data.UnitOfWork;
+using IAGenerativa.Logica.Servicios;
 using IAGenerativa.Logica.Servicios.Interfaces;
 using IAGenerativaDemo.Business.Servicios;
 using IAGenerativaWeb.Models.Configuration.MLModelConfiguration;
@@ -18,7 +19,7 @@ builder.Services.AddDbContext<IagenerativaDbContext>(options =>
 builder.Services.AddHttpClient();
 
 
-
+builder.Services.AddSingleton<IModeloMLService, ModeloMLService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddOptions().Configure<MLModelConfiguration>(builder.Configuration.GetSection("IAGenerativeModel"))
     .AddScoped<IClasificacionTextoService, ClasificacionTextoService>();
