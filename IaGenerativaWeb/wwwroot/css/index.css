@@ -130,3 +130,19 @@
         box-shadow: 0 4px 8px rgba(255, 156, 238, 0.4);
         transform: translateY(-1px);
     }
+
+
+.form .horizontal label,
+.d-flex label {
+    color: #f5e6fa !important;
+    font-weight: bold;
+    margin-left: 6px;
+    letter-spacing: 0.5px;
+}
+
+.form input[type="radio"],
+.d-flex input[type="radio"] {
+    accent-color: #2ecc71;
+    width: 1.15em;
+    height: 1.15em;
+}
