@@ -26,6 +26,19 @@ namespace IAGenerativaDemo.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> AnalizadorOraciones(TextoViewModel model)
         {
+            if (string.IsNullOrWhiteSpace(model.Texto))
+            {
+                ModelState.AddModelError("Texto", "Debe ingresar una oración.");
+            }
+            else if (System.Text.RegularExpressions.Regex.IsMatch(model.Texto.Trim(), @"^\d+$"))
+            {
+                model.MensajeSoloNumeros = "Solo ingresó números, debe ingresar texto.";
+                ModelState.AddModelError("Texto", model.MensajeSoloNumeros);
+            }
+
+            if (!ModelState.IsValid)
+                return View(model);
+
             if (!string.IsNullOrWhiteSpace(model.Texto))
             {
                 model.Clasificacion = _servicio.Clasificar(model.Texto);
