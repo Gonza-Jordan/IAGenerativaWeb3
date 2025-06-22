@@ -1,7 +1,10 @@
-﻿namespace IAGenerativaDemo.Web.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace IAGenerativaDemo.Web.Models
 {
     public class TextoViewModel
     {
+        [Required(ErrorMessage = "Debe ingresar un texto, el campo no puede quedar vacio.")]
         public string Texto { get; set; }
         public string Clasificacion { get; set; }
         public string OpcionTransformar { get; set; }
@@ -11,6 +14,7 @@
         public string AmbitoSugerido { get; set; }
         public List<(string Frase, string Etiqueta)> ResultadosPartes { get; set; }
         public string ResultadoEstadoAnimo { get; set; }
+        public string MensajeSoloNumeros { get; set; }
 
     }
 }

@@ -5,11 +5,22 @@
 <div class="container">
     <h2 class="text title">Analizador de Estado de Ánimo</h2>
     <form asp-action="AnalizadorEstadoAnimo" method="post" class="form container">
-            <label for="texto" class="text subtitle">Ingrese el texto a analizar:</label>
-            <textarea id="texto" name="Texto" rows="4" class="textarea">@Model?.Texto</textarea>
+        <label for="texto" class="text subtitle">Ingrese el texto a analizar:</label>
+        <textarea id="texto" name="Texto" rows="4" class="textarea">@Model?.Texto</textarea>
         <button type="submit" class="button">Analizar</button>
+
+        @if (ViewData.ModelState["Texto"]?.Errors.Count > 0)
+        {
+            foreach (var error in ViewData.ModelState["Texto"].Errors)
+            {
+                <div class="alert alert-danger">@error.ErrorMessage</div>
+            }
+        }
     </form>
-    @if (!string.IsNullOrEmpty(Model?.Texto))
+
+    @if (!string.IsNullOrEmpty(Model?.Texto)
+    && string.IsNullOrEmpty(Model?.MensajeSoloNumeros)
+    && string.IsNullOrEmpty(ViewData.ModelState["Texto"]?.Errors.FirstOrDefault(e => e.ErrorMessage.Contains("Solo ingresó números"))?.ErrorMessage))
     {
         <hr />
         <h5>Texto ingresado:</h5>
@@ -18,15 +29,40 @@
         @if (!string.IsNullOrEmpty(Model?.ResultadoEstadoAnimo))
         {
             <strong>Resultado:</strong>
-            <div >Estado de ánimo detectado: 
+            <div>
+                Estado de ánimo detectado:
                 <p class="result">@Model.ResultadoEstadoAnimo</p>
-                </div>
+            </div>
         }
     }
 </div>
 
-<a href="@Url.Action("AnalizadorOraciones", "Texto")" class="back">Volver</a>
-
-
+<button type="button" class="back" onclick="location.href='@Url.Action("Index", "Home")'">Ir al Inicio</button>
 <link rel="stylesheet" href="~/css/index.css" />
 
+<script>
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const textarea = document.getElementById('texto');
+        const value = textarea.value.trim();
+        // Remueve mensajes previos
+        document.querySelectorAll('.alert').forEach(el => el.remove());
+
+        let valid = true;
+
+        if (value === "") {
+            const error = document.createElement('div');
+            error.className = 'alert alert-danger';
+            error.textContent = 'Debe ingresar un texto.';
+            textarea.parentNode.insertBefore(error, textarea.nextSibling);
+            valid = false;
+        } else if (/^\d+$/.test(value)) {
+            const error = document.createElement('div');
+            error.className = 'alert alert-danger';
+            error.textContent = 'Solo ingresó números, debe ingresar texto.';
+            textarea.parentNode.insertBefore(error, textarea.nextSibling);
+            valid = false;
+        }
+
+        if (!valid) e.preventDefault();
+    });
+</script>

@@ -131,6 +131,21 @@ namespace IAGenerativaDemo.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> AnalizadorEstadoAnimo(TextoViewModel model)
         {
+            if (string.IsNullOrWhiteSpace(model.Texto))
+            {
+                ModelState.AddModelError("Texto", "Debe ingresar un texto.");
+            }
+            else if (System.Text.RegularExpressions.Regex.IsMatch(model.Texto.Trim(), @"^\d+$"))
+            {
+                model.MensajeSoloNumeros = "Solo ingresó números, debe ingresar texto.";
+                ModelState.AddModelError("Texto", "Solo ingresó números, debe ingresar texto.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
             if (!string.IsNullOrWhiteSpace(model.Texto))
             {
                 model.ResultadoEstadoAnimo = await _servicio.DetectarEstadoAnimoAsync(model.Texto);
