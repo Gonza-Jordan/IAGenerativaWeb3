@@ -39,30 +39,4 @@
 
 <button type="button" class="back" onclick="location.href='@Url.Action("Index", "Home")'">Ir al Inicio</button>
 <link rel="stylesheet" href="~/css/index.css" />
-
-<script>
-    document.querySelector('form').addEventListener('submit', function(e) {
-        const textarea = document.getElementById('texto');
-        const value = textarea.value.trim();
-        // Remueve mensajes previos
-        document.querySelectorAll('.alert').forEach(el => el.remove());
-
-        let valid = true;
-
-        if (value === "") {
-            const error = document.createElement('div');
-            error.className = 'alert alert-danger';
-            error.textContent = 'Debe ingresar un texto.';
-            textarea.parentNode.insertBefore(error, textarea.nextSibling);
-            valid = false;
-        } else if (/^\d+$/.test(value)) {
-            const error = document.createElement('div');
-            error.className = 'alert alert-danger';
-            error.textContent = 'Solo ingresó números, debe ingresar texto.';
-            textarea.parentNode.insertBefore(error, textarea.nextSibling);
-            valid = false;
-        }
-
-        if (!valid) e.preventDefault();
-    });
-</script>
+<script src="~/js/validacionTexto.js"></script>

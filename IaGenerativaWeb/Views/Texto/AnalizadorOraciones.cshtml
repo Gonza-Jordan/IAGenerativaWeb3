@@ -4,21 +4,32 @@
 }
 <div class="container">
 
-<h2 class="text title">Analizador de Oraciones</h2>
-<form asp-action="AnalizadorOraciones" method="post" class="form container">
-    <label for="texto" class="text subtitle">Ingrese la oración a analizar:</label>
-    <textarea id="texto" name="Texto" rows="4" cols="60" class="textarea">@Model?.Texto</textarea>
-    <button type="submit" class="button">Analizar</button>
-</form>
-@if (!string.IsNullOrEmpty(Model?.Texto))
-{
-    <hr />
-    <h4>Texto ingresado:</h4>
-    <div>@Model.Texto</div>
-}
+    <h2 class="text title">Analizador de Oraciones</h2>
+    <form asp-action="AnalizadorOraciones" method="post" class="form container">
+        <label for="texto" class="text subtitle">Ingrese la oración a analizar:</label>
+        <textarea id="texto" name="Texto" rows="4" cols="60" class="textarea">@Model?.Texto</textarea>
+        @if (ViewData.ModelState["Texto"]?.Errors.Count > 0)
+        {
+            foreach (var error in ViewData.ModelState["Texto"].Errors)
+            {
+                <div class="alert alert-danger">@error.ErrorMessage</div>
+            }
+        }
+        <button type="submit" class="button">Analizar</button>
+    </form>
+
+    @if (!string.IsNullOrEmpty(Model?.Texto)
+    && string.IsNullOrEmpty(Model?.MensajeSoloNumeros)
+    && (ViewData.ModelState["Texto"] == null || ViewData.ModelState["Texto"].Errors.Count == 0))
+    {
+        <hr />
+        <h4>Texto ingresado:</h4>
+        <div>@Model.Texto</div>
+    }
+
 </div>
 
 <button type="button" class="back" onclick="location.href='@Url.Action("Index", "Home")'">Ir al Inicio</button>
 
-
 <link rel="stylesheet" href="~/css/index.css" />
+<script src="~/js/validacionTexto.js"></script>
