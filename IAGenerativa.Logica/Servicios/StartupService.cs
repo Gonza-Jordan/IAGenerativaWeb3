@@ -13,19 +13,17 @@ namespace IAGenerativaDemo.Business.Servicios
 
 public class StartupService : IStartupService
 {
-    private readonly IModeloMLService _modeloMLService;
-    
-    public StartupService(IModeloMLService modeloMLService)
+    private readonly IClasificacionTextoService _clasificacionService;
+
+    public StartupService(IClasificacionTextoService clasificacionService) 
     {
-        _modeloMLService = modeloMLService;
+        _clasificacionService = clasificacionService;
     }
 
- 
+
     public Task InitializeAsync()
     {
-        var ruta = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "modelos", "modeloEntrenado.zip");
-        _modeloMLService.CargarModeloDesdeDisco(ruta);
+        _clasificacionService.Clasificar("Test de inicialización");
         return Task.CompletedTask;
     }
-
 }
