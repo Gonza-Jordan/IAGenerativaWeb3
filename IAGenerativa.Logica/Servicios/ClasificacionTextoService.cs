@@ -18,24 +18,51 @@ namespace IAGenerativaDemo.Business.Servicios
 {
     public class ClasificacionTextoService : IClasificacionTextoService
     {
-     
+        private readonly MLContext mlContext;
+        private readonly PredictionEngine<TextoInput, TextoPrediccion> predEngine;
         private readonly IUnitOfWork _unitOfWork;
         private readonly HttpClient _httpClient;
-        private readonly MLModelConfiguration _mlModelConfiguration;
-        private readonly IModeloMLService _modeloML;
+        MLModelConfiguration _mlModelConfiguration;
 
-        public ClasificacionTextoService(IUnitOfWork unitOfWork, HttpClient httpClient, IOptions<MLModelConfiguration> mlModelConfiguration, IModeloMLService modeloML)
+        public ClasificacionTextoService(IUnitOfWork unitOfWork, HttpClient httpClient, IOptions<MLModelConfiguration> mlModelConfiguration)
         {
             _unitOfWork = unitOfWork;
+            mlContext = new MLContext();
+            predEngine = EntrenarModelo();
             _httpClient = httpClient;
             _mlModelConfiguration = mlModelConfiguration.Value;
-            _modeloML = modeloML;
         }
+
         // ============ ML.NET Formal/Informal =============
-       
+        private PredictionEngine<TextoInput, TextoPrediccion> EntrenarModelo()
+        {
+            var frases = _unitOfWork.GetRepository<FraseClasificacion>()
+                .GetAllAsync("Clasificacion").Result.ToList();
+
+
+            var datos = frases.Select(f => new TextoInput
+            {
+                Texto = f.Texto,
+                Etiqueta = f.Clasificacion.Nombre
+            }).ToList();
+
+            var data = mlContext.Data.LoadFromEnumerable(datos);
+
+            var pipeline = mlContext.Transforms.Text.FeaturizeText("TextoFeaturizado", nameof(TextoInput.Texto))
+                .Append(mlContext.Transforms.Conversion.MapValueToKey("EtiquetaKey", nameof(TextoInput.Etiqueta)))
+                .Append(mlContext.MulticlassClassification.Trainers.SdcaMaximumEntropy("EtiquetaKey", "TextoFeaturizado"))
+                .Append(mlContext.Transforms.Conversion.MapKeyToValue("Prediccion", "PredictedLabel"));
+
+            var model = pipeline.Fit(data);
+
+            return mlContext.Model.CreatePredictionEngine<TextoInput, TextoPrediccion>(model);
+        }
+
+
         public string Clasificar(string texto)
         {
-            return _modeloML.Clasificar(texto);
+            var resultado = predEngine.Predict(new TextoInput { Texto = texto });
+            return resultado.Prediccion;
         }
 
         public List<(string Frase, string Etiqueta)> ClasificarPartes(string textoCompleto)
@@ -54,7 +81,6 @@ namespace IAGenerativaDemo.Business.Servicios
             }
             return resultados;
         }
-        
 
         public (double PorcentajeFormal, double PorcentajeInformal) CalcularPorcentajeFormalInformal(string textoCompleto)
         {
