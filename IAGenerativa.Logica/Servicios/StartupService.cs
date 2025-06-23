@@ -20,15 +20,7 @@ public class StartupService : IStartupService
         _modeloMLService = modeloMLService;
     }
 
-    /*
-    public Task InitializeAsync()
-    {
-        _clasificacionService.Clasificar("Test de inicialización");
-        return Task.CompletedTask;
-    }
-    */
-
-    //DEMO
+ 
     public Task InitializeAsync()
     {
         var ruta = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "modelos", "modeloEntrenado.zip");

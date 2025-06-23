@@ -19,7 +19,7 @@ builder.Services.AddDbContext<IagenerativaDbContext>(options =>
 builder.Services.AddHttpClient();
 
 
-builder.Services.AddSingleton<IModeloMLService, ModeloMLService>();
+builder.Services.AddScoped<IModeloMLService, ModeloMLService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddOptions().Configure<MLModelConfiguration>(builder.Configuration.GetSection("IAGenerativeModel"))
     .AddScoped<IClasificacionTextoService, ClasificacionTextoService>();

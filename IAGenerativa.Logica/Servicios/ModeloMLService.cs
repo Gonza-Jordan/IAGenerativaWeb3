@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using IAGenerativa.Data.EF;
+using IAGenerativa.Data.UnitOfWork;
 using IAGenerativa.Logica.Servicios.Interfaces;
 using IAGenerativaDemo.Business.Servicios;
 using Microsoft.ML;
@@ -11,22 +13,26 @@ namespace IAGenerativa.Logica.Servicios
 {
     public class ModeloMLService : IModeloMLService
     {
-
+        private readonly IUnitOfWork _unitOfWork;
         private readonly MLContext _mlContext;
         private PredictionEngine<TextoInput, TextoPrediccion> _predEngine;
 
-        public ModeloMLService()
+        public ModeloMLService(IUnitOfWork unitOfWork)
         {
+            _unitOfWork = unitOfWork;
             _mlContext = new MLContext();
         }
 
         public void EntrenarYGuardarModelo(string rutaModelo)
         {
-            var datos = new List<TextoInput>
+            var frases = _unitOfWork.GetRepository<FraseClasificacion>()
+        .GetAllAsync("Clasificacion").Result.ToList();
+
+            var datos = frases.Select(f => new TextoInput
             {
-                new() { Texto = "Hola", Etiqueta = "Informal" },
-                new() { Texto = "Estimado", Etiqueta = "Formal" }
-            };
+                Texto = f.Texto,
+                Etiqueta = f.Clasificacion.Nombre
+            }).ToList();
 
             var data = _mlContext.Data.LoadFromEnumerable(datos);
 
